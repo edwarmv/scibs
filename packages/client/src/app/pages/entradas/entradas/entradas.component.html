@@ -1,0 +1,130 @@
+<app-table [fetchDataCb]="fetchDataCb" [columns]="columns"></app-table>
+
+<ng-template #materialColumn let-entrada="element">
+  <app-cell>
+    {{ entrada.material.nombre | titlecase }}
+  </app-cell>
+</ng-template>
+
+<ng-template #fechaColumn let-entrada="element">
+  <app-cell>
+    {{ entrada.comprobanteEntradas.fechaEntrada | date: 'd/M/yyyy' }}
+  </app-cell>
+</ng-template>
+
+<ng-template #proveedorColumn let-entrada="element">
+  <app-cell>
+    {{ entrada.comprobanteEntradas.proveedor.nombre | titlecase }}
+  </app-cell>
+</ng-template>
+
+<ng-template #documentoColumn let-entrada="element">
+  <app-cell>
+    {{ entrada.comprobanteEntradas.documento }}
+  </app-cell>
+</ng-template>
+
+<ng-template #cantidadColumn let-entrada="element">
+  <app-cell>
+    {{ entrada.cantidad }}
+  </app-cell>
+</ng-template>
+
+<ng-template #precioUnitarioColumn let-entrada="element">
+  <app-cell>
+    {{ entrada.precioUnitario | currency }}
+  </app-cell>
+</ng-template>
+
+<ng-template #valorTotalColumn let-entrada="element">
+  <app-cell>
+    {{ calcValorTotal(entrada.cantidad, entrada.precioUnitario) | currency }}
+  </app-cell>
+</ng-template>
+
+<ng-template #cargarSaldosAction>
+  <button appButtonOutline>
+    <app-icon name="cargar-saldo"></app-icon>
+    Cargar saldos
+  </button>
+</ng-template>
+
+<ng-template #verMaterialAction>
+  <button appButtonOutline>
+    <app-icon name="cube"></app-icon>
+    Ver material
+  </button>
+</ng-template>
+
+<ng-template #verSalidasAction>
+  <button appButtonOutline>
+    <app-icon name="turn-down-right"></app-icon>
+    Ver salidas
+  </button>
+</ng-template>
+
+<ng-template #verSaldosAction>
+  <button appButtonOutline>
+    <app-icon name="balance"></app-icon>
+    Ver saldos
+  </button>
+</ng-template>
+
+<ng-template #registrarEntradasAction>
+  <button
+    action
+    appButton
+    color="primary"
+    (click)="openComprobantesEntradasDialog()"
+  >
+    <app-icon name="add"></app-icon>
+    Registrar entradas
+  </button>
+</ng-template>
+
+<ng-template #browser>
+  <app-form-field class="w-[280px]">
+    <app-label>Fecha / Proveedor / Documento</app-label>
+    <app-icon name="research" appPrefix></app-icon>
+    <input
+      appInput
+      [(ngModel)]="term"
+      (ngModelChange)="termSubject.next($event)"
+    />
+  </app-form-field>
+</ng-template>
+
+<ng-template #saldosInicialesFilter>
+  <app-checkbox
+    [(ngModel)]="saldoInicial"
+    (ngModelChange)="onSaldoInicialChange()"
+  >
+    Saldos iniciales
+  </app-checkbox>
+</ng-template>
+
+<ng-template #materialesFilter>
+  <app-dropdown
+    [dataCb]="materialesDropdownCb"
+    [showFilter]="true"
+    filterPlaceholder="Nombre"
+    [showClearSelectionBtn]="true"
+    emptyValueLabel="Material"
+    (valueChange)="onMaterialChange($event)"
+  >
+    <app-icon prefix name="calendar"></app-icon>
+  </app-dropdown>
+</ng-template>
+
+<ng-template #gestionesFilter>
+  <app-dropdown
+    [dataCb]="gestionesDropdownCb"
+    [showFilter]="true"
+    filterPlaceholder="Fecha"
+    [showClearSelectionBtn]="true"
+    emptyValueLabel="Gestión"
+    (valueChange)="onGestionChange($event)"
+  >
+    <app-icon prefix name="cube"></app-icon>
+  </app-dropdown>
+</ng-template>

@@ -1,0 +1,13 @@
+<div
+  *ngIf="value; else loading"
+  class="whitespace-nowrap cursor-default hover:bg-red-100"
+  (click)="selectItem()"
+>
+  {{ value.label }}
+</div>
+
+<ng-template #loading>
+  <div class="whitespace-nowrap cursor-default hover:bg-red-100">
+    Cargando...
+  </div>
+</ng-template>

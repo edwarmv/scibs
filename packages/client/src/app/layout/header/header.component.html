@@ -1,0 +1,36 @@
+<div class="flex flex-col gap-4">
+  <div *ngIf="headerTitle || actions.length > 0" class="flex justify-between">
+    <div *ngIf="headerTitle" class="title-3 cursor-default">
+      {{ headerTitle }}
+    </div>
+
+    <div actions class="flex items-center gap-4">
+      <ng-container
+        *ngFor="let action of actions"
+        [ngTemplateOutlet]="action.templateRef"
+      ></ng-container>
+    </div>
+  </div>
+
+  <div
+    *ngIf="browser || filters.length > 0"
+    class="bg-gray-100 p-[12px] rounded-[24px]"
+  >
+    <div class="flex gap-4 items-center">
+      <ng-container
+        *ngIf="browser"
+        [ngTemplateOutlet]="browser.templateRef"
+      ></ng-container>
+
+      <div
+        *ngIf="filters.length > 0"
+        class="grow flex gap-4 items-center justify-end"
+      >
+        <ng-container
+          *ngFor="let filter of filters"
+          [ngTemplateOutlet]="filter.templateRef"
+        ></ng-container>
+      </div>
+    </div>
+  </div>
+</div>

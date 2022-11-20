@@ -1,0 +1,19 @@
+<div class="flex flex-col gap-4">
+  <div class="headline">
+    {{ data.title }}
+  </div>
+
+  <div>
+    {{ data.message }}
+  </div>
+
+  <div class="flex gap-2 justify-end w-full">
+    <button type="button" (click)="cancel()" appButton color="secondary">
+      {{ data.cancelBtnText ? data.cancelBtnText : 'Cancelar' }}
+    </button>
+
+    <button type="button" (click)="confirm()" appButton color="primary">
+      {{ data.confirmBtnText ? data.confirmBtnText : 'Si' }}
+    </button>
+  </div>
+</div>

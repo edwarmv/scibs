@@ -1,0 +1,66 @@
+<app-table
+  (onDblClickRow)="onDblClickRow($event)"
+  (onBsRow)="onBsRow($event)"
+  [fetchDataCb]="fetchDataCb"
+  [columns]="columns"
+></app-table>
+
+<ng-template #nombreColumn let-material="element">
+  <app-cell>
+    {{ material.nombre | titlecase }}
+  </app-cell>
+</ng-template>
+
+<ng-template #codigoColumn let-material="element">
+  <app-cell>
+    {{ material.partida.numero + '-' + material.codigoIndex }}
+  </app-cell>
+</ng-template>
+
+<ng-template #stockMinimoColumn let-material="element">
+  <app-cell>
+    {{ material.stockMinimo }}
+  </app-cell>
+</ng-template>
+
+<ng-template #unidadManejoColumn let-material="element">
+  <app-cell>
+    {{ material.unidadManejo.nombre | titlecase }}
+  </app-cell>
+</ng-template>
+
+<ng-template #caracteristicasColumn let-material="element">
+  <app-cell>
+    {{ material.caracteristicas ? material.caractericasColumn : '-' }}
+  </app-cell>
+</ng-template>
+
+<ng-template #createMaterialButton>
+  <button (click)="registrarMaterial()" appButton color="primary">
+    <app-icon name="add"></app-icon>
+    Registrar material
+  </button>
+</ng-template>
+
+<ng-template #filterInput>
+  <app-form-field>
+    <app-label>Nombre</app-label>
+    <app-icon name="research" appPrefix></app-icon>
+    <input
+      appInput
+      (ngModelChange)="termSubject.next($event)"
+      [(ngModel)]="term"
+    />
+  </app-form-field>
+</ng-template>
+
+<ng-template #partidaFilter>
+  <app-dropdown
+    [showFilter]="true"
+    [dataCb]="partidasCb"
+    filterPlaceholder="Nombre / Número"
+    (valueChange)="onPartidaSelect($event)"
+    [showClearSelectionBtn]="true"
+    emptyValueLabel="Partidas"
+  ></app-dropdown>
+</ng-template>

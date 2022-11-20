@@ -1,0 +1,188 @@
+<div class="flex flex-col gap-5">
+  <div class="headline">Entradas</div>
+
+  <form
+    class="flex flex-col gap-5"
+    [formGroup]="comprobanteEntradasForm"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="flex gap-5">
+      <app-form-field class="grow">
+        <app-label>Documento</app-label>
+        <input appInput formControlName="documento" />
+        <app-error *ngIf="documento?.hasError('required')">
+          Campo requerido
+        </app-error>
+      </app-form-field>
+
+      <app-form-field>
+        <app-label>Fecha de entrada</app-label>
+        <input appInput type="date" formControlName="fechaEntrada" />
+        <app-error *ngIf="fechaEntrada?.hasError('required')">
+          Campo requerido
+        </app-error>
+      </app-form-field>
+
+      <app-checkbox formControlName="saldoInicial">Saldo inicial</app-checkbox>
+    </div>
+
+    <div class="flex gap-5">
+      <ng-container formGroupName="gestion">
+        <app-form-field
+          class="grow"
+          [autocompleteDataCb]="gestionesAutocompleteCb"
+          (autocompleteValueChange)="onGestionChange($event)"
+        >
+          <app-label>Gestión</app-label>
+          <input appInput formControlName="label" />
+          <app-error *ngIf="gestion?.get('id')?.hasError('required')">
+            Campo requerido
+          </app-error>
+        </app-form-field>
+      </ng-container>
+
+      <ng-container formGroupName="proveedor">
+        <app-form-field
+          class="grow"
+          [autocompleteDataCb]="proveedoresAutocompleteCb"
+          (autocompleteValueChange)="onProveedorChange($event)"
+        >
+          <app-label>Proveedor</app-label>
+          <input appInput formControlName="nombre" />
+          <app-error *ngIf="proveedor?.get('id')?.hasError('required')">
+            Campo requerido
+          </app-error>
+        </app-form-field>
+      </ng-container>
+    </div>
+
+    <div class="flex items-center gap-5">
+      <div class="flex flex-col">
+        <div class="subheadline">
+          Materiales ({{ entradas.controls.length }})
+        </div>
+        <app-error
+          *ngIf="
+            !entradas.hasError('arrayDuplicate') &&
+            !entradas.hasError('arrayMin') &&
+            entradas.invalid
+          "
+        >
+          Entradas con errores
+        </app-error>
+        <app-error *ngIf="entradas.hasError('arrayMin')">
+          Al menos debe agregar un material
+        </app-error>
+        <app-error *ngIf="entradas.hasError('arrayDuplicate')">
+          Entradas duplicadas
+        </app-error>
+      </div>
+
+      <button
+        type="button"
+        (click)="addEntrada()"
+        appIconButton
+        color="primary"
+      >
+        <app-icon name="add"></app-icon>
+      </button>
+    </div>
+
+    <div
+      *ngIf="entradas.controls.length > 0"
+      class="w-full max-h-[500px] overflow-auto"
+    >
+      <table
+        class="border-separate border-spacing-x-0 border-spacing-y-2 px-[30px] pb-[30px] w-full"
+      >
+        <thead>
+          <tr class="bg-gray-100 text-gray-400 h-[40px] body-small">
+            <th class="text-left px-4 rounded-l-[16px]">Nº</th>
+            <th class="text-left pr-4">Material</th>
+            <th class="text-left pr-4">Precio unitario (Bs.)</th>
+            <th class="text-left pr-4 rounded-r-[16px]">Cantidad</th>
+          </tr>
+        </thead>
+
+        <tbody formArrayName="entradas">
+          <tr
+            [tabindex]="i + 1"
+            (focus)="focusedRow = true"
+            (blur)="focusedRow = false"
+            (keydown.backspace)="focusedRow && removeEntrada(i)"
+            *ngFor="let entrada of entradas.controls; let i = index"
+            [formGroup]="entrada"
+            class="hover:default-box-shadow focus:ring-1 focus:ring-red-700 rounded-[16px] outline-none"
+          >
+            <td class="px-4 py-3">{{ i + 1 }}</td>
+
+            <td class="pr-4 py-3" formGroupName="material">
+              <app-form-field
+                [autocompleteDataCb]="materialesAutocompleteCb"
+                (autocompleteValueChange)="onMaterialChange(i, $event)"
+              >
+                <app-label>Material</app-label>
+                <input
+                  (keydown.backspace)="$event.stopPropagation()"
+                  appInput
+                  formControlName="nombre"
+                />
+                <app-error
+                  *ngIf="
+                    entrada.get('material')?.get('id')?.hasError('required')
+                  "
+                >
+                  Campo requerido
+                </app-error>
+              </app-form-field>
+            </td>
+
+            <td class="pr-4 py-3">
+              <app-form-field>
+                <app-label>Precio unitario (Bs.)</app-label>
+                <input
+                  type="number"
+                  (keydown.backspace)="$event.stopPropagation()"
+                  appInput
+                  formControlName="precioUnitario"
+                />
+                <app-error
+                  *ngIf="
+                    entrada.get('precioUnitario')?.hasError('numberSmallerThan')
+                  "
+                >
+                  El valor debe ser mayor a cero
+                </app-error>
+              </app-form-field>
+            </td>
+
+            <td class="pr-4 py-3">
+              <app-form-field>
+                <app-label>Cantidad</app-label>
+                <input
+                  (keydown.backspace)="$event.stopPropagation()"
+                  type="number"
+                  appInput
+                  formControlName="cantidad"
+                />
+                <app-error
+                  *ngIf="entrada.get('cantidad')?.hasError('numberSmallerThan')"
+                >
+                  El valor debe ser mayor a cero
+                </app-error>
+              </app-form-field>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </form>
+
+  <div class="flex justify-end">
+    <button appButton color="secondary" (click)="close()">Cancelar</button>
+
+    <button appButton color="primary" (click)="onSubmit()">
+      {{ data ? 'Actualizar' : 'Registrar' }}
+    </button>
+  </div>
+</div>

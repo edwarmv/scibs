@@ -1,0 +1,51 @@
+<div class="main-content-wrap">
+  <app-header headerTitle="Gestiones">
+    <ng-template appHeaderAction>
+      <button (click)="openGestionDialog()" appButton color="primary">
+        <app-icon name="add"></app-icon>
+        Registrar gestión
+      </button>
+    </ng-template>
+
+    <ng-template appHeaderBrowser>
+      <app-form-field>
+        <app-label>Gestión</app-label>
+        <app-icon name="research" appPrefix></app-icon>
+        <input
+          appInput
+          (ngModelChange)="termSubject.next($event)"
+          [(ngModel)]="term"
+        />
+      </app-form-field>
+    </ng-template>
+  </app-header>
+
+  <app-table
+    (onDblClickRow)="openGestionDialog($event)"
+    (onBsRow)="onBsRow($event)"
+    [fetchDataCb]="fetchDataCb"
+    [columns]="columns"
+  ></app-table>
+
+  <ng-template #gestionColumn let-gestion="element">
+    <app-cell>
+      {{ gestion.fechaApertura | date: 'y' }}
+    </app-cell>
+  </ng-template>
+
+  <ng-template #fechaAperturaColumn let-gestion="element">
+    <app-cell>
+      {{ gestion.fechaApertura | date }}
+    </app-cell>
+  </ng-template>
+
+  <ng-template #fechaCierreColumn let-gestion="element">
+    <app-cell *ngIf="gestion.fechaCierre; else defaultFechaCierre">
+      {{ gestion.fechaCierre | date }}
+    </app-cell>
+
+    <ng-template #defaultFechaCierre>
+      <app-cell>-</app-cell>
+    </ng-template>
+  </ng-template>
+</div>

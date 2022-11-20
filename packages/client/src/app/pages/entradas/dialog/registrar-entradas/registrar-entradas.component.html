@@ -1,0 +1,35 @@
+<app-dialog-title>
+  Registrar entradas
+</app-dialog-title>
+
+<app-dialog-content>
+  <form [formGroup]="form" class="grid gap-[10px] grid-cols-2 grid-rows-2">
+    <app-form-field>
+      <app-label>Documento</app-label>
+      <input appInput formControlName="documento">
+    </app-form-field>
+
+    <app-form-field>
+      <app-label>Fecha de entrega</app-label>
+      <input appInput formControlName="fechaEntrega">
+    </app-form-field>
+
+    <app-form-field class="col-span-2">
+      <app-label>Proveedor</app-label>
+      <input appInput formControlName="proveedor">
+    </app-form-field>
+  </form>
+
+  <div class="flex items-center">
+    <span class="subheadline">Materiales</span>
+    <button appButtonOutline color="primary" type="button">
+      <app-icon name="add"></app-icon>
+    </button>
+  </div>
+</app-dialog-content>
+
+<app-dialog-actions>
+  <button appButton type="button">Cancelar</button>
+
+  <button appButton type="button" color="primary">Registrar</button>
+</app-dialog-actions>

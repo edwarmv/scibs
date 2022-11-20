@@ -1,0 +1,90 @@
+<div class="default-dialog-content">
+  <app-dialog-title *ngIf="data; else defaultTitle">
+    {{ data.nombre | titlecase }}
+  </app-dialog-title>
+
+  <ng-template #defaultTitle>
+    <app-dialog-title>Registrar material</app-dialog-title>
+  </ng-template>
+
+  <app-dialog-content>
+    <form
+      class="default-form"
+      [formGroup]="materialForm"
+      (keydown.enter)="onSubmit()"
+    >
+      <app-form-field>
+        <app-label>Codigo</app-label>
+        <input appInput formControlName="codigoIndex" />
+        <app-error *ngIf="codigoIndex?.hasError('required')">
+          Campo requerido
+        </app-error>
+      </app-form-field>
+
+      <app-form-field>
+        <app-label>Nombre</app-label>
+        <input appInput type="text" formControlName="nombre" />
+        <app-error *ngIf="nombre?.hasError('required')">
+          Campo requerido
+        </app-error>
+      </app-form-field>
+
+      <app-form-field>
+        <app-label>Stock mínimo</app-label>
+        <input appInput type="number" formControlName="stockMinimo" />
+        <app-error *ngIf="stockMinimo?.hasError('required')">
+          Campo requerido
+        </app-error>
+        <app-error *ngIf="stockMinimo?.hasError('min')">
+          Debe ser mayor a 0
+        </app-error>
+      </app-form-field>
+
+      <app-form-field>
+        <app-label>Características</app-label>
+        <input appInput formControlName="caracteristicas" />
+      </app-form-field>
+
+      <ng-container formGroupName="unidadManejo">
+        <app-form-field
+          [autocompleteDataCb]="unidadManejoAutocompleteCb"
+          (autocompleteValueChange)="onUnidadManejoChange($event)"
+        >
+          <app-label>Unidad de manejo</app-label>
+          <input appInput type="text" formControlName="nombre" />
+          <app-error *ngIf="unidadManejo?.get('id')?.hasError('required')">
+            Debe seleccionar una unidad de manejo
+          </app-error>
+          <app-error *ngIf="unidadManejo?.get('nombre')?.hasError('required')">
+            Campo requerido
+          </app-error>
+        </app-form-field>
+      </ng-container>
+
+      <ng-container formGroupName="partida">
+        <app-form-field
+          [autocompleteDataCb]="partidaAutocompleteCb"
+          (autocompleteValueChange)="onPartidaChange($event)"
+        >
+          <app-label>Partida</app-label>
+          <input appInput type="text" formControlName="nombre" />
+          <app-error *ngIf="partida?.get('id')?.hasError('required')">
+            Debe seleccionar una partida
+          </app-error>
+          <app-error *ngIf="partida?.get('nombre')?.hasError('required')">
+            Campo requerido
+          </app-error>
+        </app-form-field>
+      </ng-container>
+    </form>
+  </app-dialog-content>
+
+  <app-dialog-actions>
+    <button appButton (click)="close()" type="button" color="secondary">
+      Cancelar
+    </button>
+    <button appButton type="button" (click)="onSubmit()" color="primary">
+      {{ data ? 'Actualizar' : 'Registrar' }}
+    </button>
+  </app-dialog-actions>
+</div>

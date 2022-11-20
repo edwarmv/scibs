@@ -1,0 +1,39 @@
+<app-dialog-title *ngIf="data; else defaultTitle">
+  {{ data.nombre | titlecase }}
+</app-dialog-title>
+
+<ng-template #defaultTitle>
+  <app-dialog-title>Registrar partida</app-dialog-title>
+</ng-template>
+
+<app-dialog-content>
+  <form class="default-form" [formGroup]="partidaForm" (keydown.enter)="onSubmit()">
+    <app-form-field>
+      <app-label>Nombre</app-label>
+      <input appInput formControlName="nombre" />
+      <app-error *ngIf="nombre?.hasError('required')">
+        Campo requerido
+      </app-error>
+    </app-form-field>
+
+    <app-form-field>
+      <app-label>Número</app-label>
+      <input appInput type="text" formControlName="numero" />
+      <app-error *ngIf="numero?.hasError('required')">
+        Campo requerido
+      </app-error>
+      <app-error *ngIf="numero?.hasError('min')">
+        Debe ser mayor a 0
+      </app-error>
+    </app-form-field>
+  </form>
+</app-dialog-content>
+
+<app-dialog-actions>
+  <button appButton (click)="close()" type="button" color="secondary">
+    Cancelar
+  </button>
+  <button appButton type="button" (click)="onSubmit()" color="primary">
+    {{ data ? 'Actualizar' : 'Registrar' }}
+  </button>
+</app-dialog-actions>

@@ -1,0 +1,24 @@
+<div
+  class="caption px-2 py-1 rounded-[10px] cursor-default"
+  [ngClass]="{
+    'text-white': colorStyle == 'solid',
+    'bg-blue-700': color == 'blue' && colorStyle == 'solid',
+    'bg-pink-700': color == 'pink' && colorStyle == 'solid',
+    'bg-green-800': color == 'green' && colorStyle == 'solid',
+    'bg-yellow-700': color == 'yellow' && colorStyle == 'solid',
+    'bg-orange-700': color == 'orange' && colorStyle == 'solid',
+    'bg-red-700': color == 'red' && colorStyle == 'solid',
+    'bg-purple-700': color == 'purple' && colorStyle == 'solid',
+    'bg-gray-700': color == 'gray' && colorStyle == 'solid',
+    'bg-blue-150 text-blue-700': color == 'blue' && colorStyle == 'light',
+    'bg-pink-150 text-pink-700': color == 'pink' && colorStyle == 'light',
+    'bg-green-150 text-green-900': color == 'green' && colorStyle == 'light',
+    'bg-yellow-150 text-yellow-700': color == 'yellow' && colorStyle == 'light',
+    'bg-orange-150 text-orange-700': color == 'orange' && colorStyle == 'light',
+    'bg-red-150 text-red-700': color == 'red' && colorStyle == 'light',
+    'bg-purple-150 text-purple-700': color == 'purple' && colorStyle == 'light',
+    'bg-gray-150 text-gray-700': color == 'gray' && colorStyle == 'light'
+  }"
+>
+  <ng-content></ng-content>
+</div>

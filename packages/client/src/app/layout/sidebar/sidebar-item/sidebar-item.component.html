@@ -1,0 +1,35 @@
+<a
+  [routerLink]="path"
+  routerLinkActive
+  #rla="routerLinkActive"
+  class="flex p-3 gap-3 items-center rounded-xl whitespace-nowrap"
+  [ngClass]="{
+    'bg-red-100': rla.isActive,
+    'justify-center': sidebarService.collapsed
+  }"
+>
+  <div class="flex items-center relative">
+    <app-icon
+      [name]="icon"
+      [ngClass]="{ 'text-red-700': rla.isActive }"
+    ></app-icon>
+
+    <span
+      class="absolute top-0 right-[-6px] bg-red-700 h-[6px] w-[6px] rounded-[50%]"
+      *ngIf="sidebarService.collapsed"
+    ></span>
+  </div>
+
+  <div
+    class="grow flex justify-between items-center"
+    *ngIf="!sidebarService.collapsed"
+  >
+    <div class="body-small-bold" [ngClass]="{ 'text-red-700': rla.isActive }">
+      <ng-content></ng-content>
+    </div>
+
+    <app-badge *ngIf="count > 0">
+      {{ count }}
+    </app-badge>
+  </div>
+</a>

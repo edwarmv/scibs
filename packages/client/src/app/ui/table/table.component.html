@@ -1,0 +1,88 @@
+<table
+  cdk-table
+  [dataSource]="dataSource"
+  class="border-separate border-spacing-x-0 border-spacing-y-2"
+>
+  <ng-container
+    [cdkColumnDef]="column.name"
+    *ngFor="let column of columns; let i = index"
+  >
+    <th
+      cdk-header-cell
+      *cdkHeaderCellDef
+      [ngClass]="{
+        'pl-2 rounded-l-[16px]': i == 0,
+        'pr-2 rounded-r-[16px]': i == columns.length - 1,
+        'pr-[10px]': i != columns.length - 1
+      }"
+    >
+      <div class="group flex items-center gap-1">
+        {{ column.name }}
+        <button
+          class="opacity-0 group-hover:opacity-100"
+          [ngClass]="{
+            'opacity-100':
+              activeColumn === i && sortIconArray[sortIconIndex] != ''
+          }"
+          (click)="onClickSort(i)"
+          *ngIf="column.sortable"
+          type="button"
+          appIconButton
+        >
+          <ng-container
+            *ngIf="activeColumn === i; else defaultSortIcon"
+            [ngSwitch]="sortIconArray[sortIconIndex]"
+          >
+            <app-icon *ngSwitchCase="'ASC'" name="angle-up"></app-icon>
+            <app-icon *ngSwitchCase="'DESC'" name="angle-down"></app-icon>
+            <app-icon *ngSwitchCase="''" name="arrows"></app-icon>
+          </ng-container>
+          <ng-template #defaultSortIcon>
+            <app-icon name="arrows"></app-icon>
+          </ng-template>
+        </button>
+      </div>
+    </th>
+    <!--start columns-->
+    <td
+      cdk-cell
+      *cdkCellDef="let element; let j = index"
+      [ngSwitch]="column.type"
+      [ngClass]="{
+        'pl-2 rounded-l-[16px]': i == 0,
+        'pr-2 rounded-r-[16px]': i == columns.length - 1,
+        'pr-[10px]': i != columns.length - 1,
+        'caption text-gray-350': column.type == 'index',
+        'body-small-bold': column.type == undefined
+      }"
+    >
+      <ng-container *ngSwitchCase="'index'">
+        {{ j + 1 + pageIndex * pageSize }}
+      </ng-container>
+
+      <ng-container *ngSwitchDefault>
+        <ng-container *ngIf="column.template">
+          <ng-container
+            *ngTemplateOutlet="column.template; context: { element }"
+          ></ng-container>
+        </ng-container>
+      </ng-container>
+    </td>
+    <!--end columns-->
+  </ng-container>
+
+  <tr
+    cdk-header-row
+    *cdkHeaderRowDef="columnNames"
+    class="body-small bg-gray-100 text-gray-400 h-[40px]"
+  ></tr>
+  <tr
+    cdk-row
+    [tabindex]="i + 1"
+    (keydown.backspace)="bsRow(element)"
+    (dblclick)="dblClickRow(element)"
+    *cdkRowDef="let element; columns: columnNames; let i = index"
+    class="h-[56px] hover:default-box-shadow focus:ring-1 focus:ring-red-700 rounded-[16px] outline-none"
+  ></tr>
+</table>
+<app-paginator [itemsPerPage]="itemsPerPage" [length]="length"></app-paginator>

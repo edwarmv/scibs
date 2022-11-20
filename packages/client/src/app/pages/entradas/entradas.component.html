@@ -1,0 +1,37 @@
+<div class="main-content-wrap">
+  <app-header headerTitle="Entradas">
+    <ng-template appHeaderAction *ngFor="let action of actions">
+      <ng-container *ngTemplateOutlet="action"></ng-container>
+    </ng-template>
+
+    <ng-template *ngIf="browser" appHeaderBrowser>
+      <ng-container *ngTemplateOutlet="browser"></ng-container>
+    </ng-template>
+
+    <ng-template appHeaderFilter *ngFor="let filter of filters">
+      <ng-container *ngTemplateOutlet="filter"></ng-container>
+    </ng-template>
+  </app-header>
+
+  <app-tab>
+    <app-tab-item [showCounter]="true" [count]="totalEntradas" path="/entradas">
+      Entradas
+    </app-tab-item>
+    <app-tab-item
+      [showCounter]="true"
+      [count]="totalProveedores"
+      path="/entradas/proveedores"
+    >
+      Proveedores
+    </app-tab-item>
+    <app-tab-item
+      [showCounter]="true"
+      [count]="totalComprobantes"
+      path="/entradas/comprobantes"
+    >
+      Comprobantes
+    </app-tab-item>
+  </app-tab>
+
+  <router-outlet class="hidden" (activate)="onActivate($event)"></router-outlet>
+</div>

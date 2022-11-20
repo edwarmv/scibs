@@ -1,0 +1,51 @@
+<div
+  class="flex items-center justify-between"
+  *ngIf="itemsPerPage.length && length"
+>
+  <div class="caption text-gray-300 whitespace-nowrap w-[220px]">
+    mostrando {{ pageIndex * pageSize + 1 }} -
+    {{ lastPageNumber === pageIndex + 1 ? length : pageIndex + 1 * pageSize }}
+    de {{ length }} resultados
+  </div>
+
+  <div class="flex items-center gap-[40px]">
+    <button
+      appIconButton
+      (click)="prevPage()"
+      [disabled]="prevPageBtnDisabled()"
+      color="primary"
+    >
+      <app-icon name="angle-left"></app-icon>
+    </button>
+
+    <div class="flex items-center gap-[32px] button-medium">
+      <span
+        [ngClass]="{ 'text-red-700': pageNumber == pageIndex + 1 }"
+        class="cursor-default p-2"
+        (click)="pageIndexSubject.next(pageNumber - 1)"
+        *ngFor="let pageNumber of pageNumbers[currentPageSection]"
+      >
+        {{ pageNumber }}
+      </span>
+    </div>
+
+    <button
+      appIconButton
+      (click)="nextPage()"
+      [disabled]="nextPageBtnDisabled()"
+      color="primary"
+    >
+      <app-icon name="angle-right"></app-icon>
+    </button>
+  </div>
+
+  <div class="flex gap-2 items-center">
+    <span class="caption text-gray-300">items por página</span>
+
+    <app-dropdown
+      [defaultValue]="itemsPerPage[0]"
+      [data]="itemsPerPage"
+      (valueChange)="$event && pageSizeSubject.next($event)"
+    ></app-dropdown>
+  </div>
+</div>

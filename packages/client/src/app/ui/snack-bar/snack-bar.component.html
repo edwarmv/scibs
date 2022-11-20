@@ -1,0 +1,26 @@
+<div
+  class="flex items-center gap-2 px-4 py-2 default-box-shadow rounded-[20px] mb-4"
+  [ngClass]="{
+    'bg-red-150': data.style === 'error',
+    'bg-yellow-150': data.style === 'warning'
+  }"
+>
+  <p class="body-small" [ngClass]="{ 'text-red-700': data.style === 'error' }">
+    {{ data.message }}
+  </p>
+
+  <button
+    appButton
+    [color]="
+      data.style === 'error'
+        ? 'error'
+        : data.style === 'warning'
+        ? 'warning'
+        : 'basic'
+    "
+    type="button"
+    (click)="close()"
+  >
+    cerrar
+  </button>
+</div>

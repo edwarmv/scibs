@@ -1,0 +1,42 @@
+<div class="default-dialog-content">
+  <app-dialog-title *ngIf="data; else defaultTitle">
+    {{ data.fechaApertura | date: 'y' }}
+  </app-dialog-title>
+
+  <ng-template #defaultTitle>
+    <app-dialog-title>Registrar gestión</app-dialog-title>
+  </ng-template>
+
+  <app-dialog-content>
+    <form
+      class="default-form"
+      [formGroup]="gestionForm"
+      (keydown.enter)="onSubmit()"
+    >
+      <app-form-field>
+        <app-label>Fecha de apertura</app-label>
+        <input appInput type="date" formControlName="fechaApertura" />
+        <app-error *ngIf="fechaApertura?.hasError('required')">
+          Campo requerido
+        </app-error>
+      </app-form-field>
+
+      <app-form-field *ngIf="data">
+        <app-label>Fecha de cierre</app-label>
+        <input appInput type="date" formControlName="fechaCierre" />
+        <app-error *ngIf="fechaCierre?.hasError('required')">
+          Campo requerido
+        </app-error>
+      </app-form-field>
+    </form>
+  </app-dialog-content>
+
+  <app-dialog-actions>
+    <button appButton (click)="close()" type="button" color="secondary">
+      Cancelar
+    </button>
+    <button appButton type="button" (click)="onSubmit()" color="primary">
+      {{ data ? 'Actualizar' : 'Registrar' }}
+    </button>
+  </app-dialog-actions>
+</div>

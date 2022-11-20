@@ -1,0 +1,50 @@
+<div class="main-content-wrap">
+  <app-header headerTitle="Saldos">
+    <div action class="caption flex gap-4">
+      <div>
+        Stock mínimo: 200
+      </div>
+
+      <div class="flex gap-[10px]">
+        <div class="flex flex-col items-end">
+          <div>Saldo total:</div>
+          <div>Saldo total valorado (Bs.):</div>
+        </div>
+
+        <div>
+          <div>1520</div>
+          <div>48640</div>
+        </div>
+      </div>
+    </div>
+
+    <form appBrowser [formGroup]="form">
+      <app-form-field>
+        <app-label>Documento</app-label>
+        <app-icon name="research" appPrefix></app-icon>
+        <input appInput formControlName="argumento" />
+        <button appSuffix appIconButton type="button">
+          <app-icon name="equalizer"></app-icon>
+        </button>
+      </app-form-field>
+    </form>
+
+    <app-checkbox appFilter>Saldos nulos</app-checkbox>
+
+    <app-checkbox appFilter>Saldos iniciales</app-checkbox>
+
+    <app-dropdown
+      appFilter
+      [defaultValue]="materiales[0]"
+      [data]="materiales"
+    ></app-dropdown>
+
+    <app-dropdown
+      appFilter
+      [defaultValue]="gestiones[0]"
+      [data]="gestiones"
+      [showFilter]="true"
+    ></app-dropdown>
+  </app-header>
+
+</div>

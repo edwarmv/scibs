@@ -1,0 +1,23 @@
+{
+  "name": "scibs",
+  "version": "1.0.0",
+  "description": "FIFO inventory control system",
+  "main": "index.js",
+  "author": "Edwar Martinínez Vale",
+  "license": "MIT",
+  "scripts": {
+    "start": "npx lerna run start --scope=client",
+    "start:server": "npx lerna run start --scope=server",
+    "start:dev:server": "npx lerna run start:dev --scope=server",
+    "start:client": "npx lerna run start --scope=client"
+  },
+  "private": true,
+  "devDependencies": {
+    "lerna": "^5.4.3",
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

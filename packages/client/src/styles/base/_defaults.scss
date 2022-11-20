@@ -1,0 +1,36 @@
+@tailwind utilities;
+@tailwind components;
+
+@layer utilities {
+  .default-box-shadow {
+    box-shadow: 0px 4px 48px rgba(0, 0, 0, 0.08),
+      0px 8px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .default-rounded {
+    border-radius: 32px;
+  }
+
+  .default-rounded-l {
+    border-top-right-radius: 32px;
+    border-bottom-right-radius: 32px;
+  }
+}
+
+@layer components {
+  .main-content-wrap {
+    @apply flex flex-col gap-4 p-[24px];
+  }
+
+  .default-form {
+    @apply flex flex-col gap-3;
+  }
+
+  .default-dialog-container {
+    @apply bg-white rounded-[32px] p-[25px] default-box-shadow;
+  }
+
+  .default-dialog-content {
+    @apply flex flex-col gap-[10px];
+  }
+}

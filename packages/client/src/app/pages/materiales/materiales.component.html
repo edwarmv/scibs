@@ -1,0 +1,41 @@
+<div class="main-content-wrap">
+  <app-header headerTitle="Materiales">
+    <ng-template appHeaderAction *ngFor="let action of actions">
+      <ng-container *ngTemplateOutlet="action"></ng-container>
+    </ng-template>
+
+    <ng-template *ngIf="browser" appHeaderBrowser>
+      <ng-container *ngTemplateOutlet="browser"></ng-container>
+    </ng-template>
+
+    <ng-template *ngFor="let filter of filters" appHeaderFilter>
+      <ng-container *ngTemplateOutlet="filter"></ng-container>
+    </ng-template>
+  </app-header>
+
+  <app-tab>
+    <app-tab-item
+      [showCounter]="true"
+      [count]="totalMateriales"
+      path="/materiales"
+    >
+      Materiales
+    </app-tab-item>
+    <app-tab-item
+      [showCounter]="true"
+      [count]="totalUnidadesManejo"
+      path="/materiales/unidades-manejo"
+    >
+      Unidades de manejo
+    </app-tab-item>
+    <app-tab-item
+      [showCounter]="true"
+      [count]="totalPartidas"
+      path="/materiales/partidas"
+    >
+      Partidas
+    </app-tab-item>
+  </app-tab>
+
+  <router-outlet class="hidden" (activate)="onActivate($event)"></router-outlet>
+</div>

@@ -1,0 +1,34 @@
+<div style="width: 478px" class="flex flex-col gap-6 default-box-shadow p-16 default-rounded">
+  <img src="assets/logo.png" alt="logo" />
+
+  <p class="headline">Inciar sesión</p>
+
+  <form class="flex flex-col gap-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <app-form-field>
+      <app-icon appPrefix name="person"></app-icon>
+      <app-label>Usuario</app-label>
+      <input appInput formControlName="username" placeholder="Ingrese su usuario" />
+      <app-error *ngIf="username?.hasError('required')">Campo requerido</app-error>
+    </app-form-field>
+
+    <app-form-field>
+      <app-icon appPrefix name="lock"></app-icon>
+      <app-label>Contraseña</app-label>
+      <input
+        appInput
+        formControlName="password"
+        type="password"
+        placeholder="Ingrese su contraseña"
+      />
+      <app-error *ngIf="password?.hasError('required')">Campo requerido</app-error>
+    </app-form-field>
+
+    <a routerLink="/cambiar-password" class="hyperlink ml-auto">¿Olvidaste tu contraseña?</a>
+
+    <button appButton size="md" color="primary" type="submit">
+      Ingresar
+      <app-icon name="right-arrow"></app-icon>
+    </button>
+  </form>
+  <a routerLink="/nueva-cuenta" class="hyperlink mx-auto">Registrarse</a>
+</div>

@@ -1,0 +1,70 @@
+<div class="relative">
+  <button
+    #dropdownButton
+    [attr.id]="dropdownButtonId"
+    type="button"
+    (click)="onClickDropdownButton()"
+    appButtonOutline
+    (mouseover)="clearSelectionBtnState = true"
+    (mouseleave)="clearSelectionBtnState = false"
+  >
+    <ng-content select="[prefix]"></ng-content>
+    {{ defaultValue ? defaultValue.label : emptyValueLabel }}
+    <button
+      appIconButton
+      *ngIf="
+        !!defaultValue && showClearSelectionBtn && clearSelectionBtnState;
+        else icon
+      "
+      (click)="clearSelection()"
+    >
+      <app-icon name="cancel"></app-icon>
+    </button>
+    <ng-template #icon>
+      <app-icon name="angle-down"></app-icon>
+    </ng-template>
+  </button>
+
+  <div
+    [attr.id]="dropdownMenuId"
+    *ngIf="showDropdownMenu"
+    #dropdownMenu
+    class="absolute flex flex-col max-h-52 rounded-xl bg-white default-box-shadow p-2"
+    [ngClass]="{ 'min-w-[150px]': showFilter }"
+  >
+    <form
+      *ngIf="showFilter"
+      [formGroup]="form"
+      class="mb-2"
+      (focus)="showDropdownMenu$.next(true)"
+    >
+      <app-form-field>
+        <app-label>Buscador</app-label>
+        <input
+          appInput
+          [placeholder]="filterPlaceholder"
+          formControlName="term"
+        />
+      </app-form-field>
+    </form>
+
+    <div *ngIf="!!!this.dataCb; else virtualScroll" class="overflow-scroll p-1">
+      <app-dropdown-item
+        *ngFor="let item of data"
+        [value]="item"
+      ></app-dropdown-item>
+    </div>
+
+    <ng-template #virtualScroll>
+      <cdk-virtual-scroll-viewport
+        itemSize="24"
+        class="overflow-scroll p-1 h-[400px] w-[350px]"
+      >
+        <app-dropdown-item
+          *cdkVirtualFor="let item of dataSource"
+          [value]="item"
+        ></app-dropdown-item>
+      </cdk-virtual-scroll-viewport>
+    </ng-template>
+  </div>
+</div>

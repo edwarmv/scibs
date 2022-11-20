@@ -1,0 +1,99 @@
+<div
+  class="transition-[width] h-full default-box-shadow default-rounded-l pt-8 pb-6 pl-6 pr-6 flex flex-col justify-between"
+  [ngClass]="{
+    'w-[96px]': sidebarService.collapsed,
+    'w-[320px]': !sidebarService.collapsed
+  }"
+>
+  <div class="flex flex-col gap-6">
+    <div
+      class="flex items-center"
+      [ngClass]="{
+        'justify-center': sidebarService.collapsed,
+        'justify-between': !sidebarService.collapsed
+      }"
+    >
+      <span class="headline cursor-default" *ngIf="!sidebarService.collapsed">
+        S.C.I.B.S
+      </span>
+
+      <button appIconButton (click)="sidebarService.toggle()">
+        <app-icon name="left-alignment"></app-icon>
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <app-sidebar-item icon="turn-down-left" path="/entradas">
+        Entradas
+      </app-sidebar-item>
+
+      <app-sidebar-item icon="turn-down-right" path="/salidas">
+        Salidas
+      </app-sidebar-item>
+
+      <app-sidebar-item icon="balance" path="/saldos">Saldos</app-sidebar-item>
+
+      <app-sidebar-item icon="cube" path="/materiales">
+        Materiales
+      </app-sidebar-item>
+
+      <app-sidebar-item icon="calendar" path="/gestiones">
+        Gestiones
+      </app-sidebar-item>
+
+      <app-sidebar-item icon="report" path="/reportes">
+        Reportes
+      </app-sidebar-item>
+
+      <app-sidebar-item icon="data-storage" path="/copias-seguridad">
+        Copias de seguridad
+      </app-sidebar-item>
+
+      <app-sidebar-item icon="help" path="/ayuda">Ayuda</app-sidebar-item>
+    </div>
+  </div>
+
+  <div class="flex justify-between items-center relative">
+    <div class="flex items-center gap-3">
+      <app-avatar
+        id="avatar-user-menu"
+        (click)="sidebarService.collapsed && toggleUserMenu()"
+        [initials]="usuario.nombre.charAt(0) + usuario.apellido.charAt(0) | uppercase"
+      ></app-avatar>
+
+      <div *ngIf="!sidebarService.collapsed">
+        <div class="body-small-bold">
+          {{ usuario.nombre + ' ' + usuario.apellido | titlecase}}
+        </div>
+        <div class="caption text-gray-400">{{ usuario.username }}</div>
+      </div>
+    </div>
+
+    <button
+      id="btn-user-menu"
+      appIconButton
+      color="primary"
+      *ngIf="!sidebarService.collapsed"
+      (click)="toggleUserMenu()"
+    >
+      <app-icon name="menu"></app-icon>
+    </button>
+
+    <div
+      id="user-menu"
+      class="body-small absolute whitespace-nowrap right-0 top-0 translate-x-full translate-y-[-100%] bg-white rounded-[16px] default-box-shadow p-[25px] flex flex-col gap-[20px]"
+      *ngIf="showUserMenu"
+    >
+      <div>Ver usuario</div>
+
+      <button
+        (click)="logout()"
+        appButtonOutline
+        color="primary"
+        class="text-red-700"
+      >
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<app-table
+  (onDblClickRow)="onDblClickRow($event)"
+  (onBsRow)="onBsRow($event)"
+  [fetchDataCb]="fetchDataCb"
+  [columns]="columns"
+></app-table>
+
+<ng-template #nombreColumn let-unidadManejo="element">
+  <app-cell>
+    {{ unidadManejo.nombre | titlecase }}
+  </app-cell>
+</ng-template>
+
+<ng-template #createUnidadManejoButton>
+  <button (click)="registrarUnidadManejo()" appButton color="primary">
+    <app-icon name="add"></app-icon>
+    Registrar unidad
+  </button>
+</ng-template>
+
+<ng-template #filterInput>
+  <app-form-field>
+    <app-label>Nombre</app-label>
+    <app-icon name="research" appPrefix></app-icon>
+    <input appInput (ngModelChange)="termSubject.next($event)" [(ngModel)]="term" />
+  </app-form-field>
+</ng-template>

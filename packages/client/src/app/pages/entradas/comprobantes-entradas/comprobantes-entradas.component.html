@@ -1,0 +1,52 @@
+<app-table
+  (onDblClickRow)="openComprobantesEntradasDialog($event)"
+  (onBsRow)="onBsRow($event)"
+  [fetchDataCb]="fetchDataCb"
+  [columns]="columns"
+></app-table>
+
+<ng-template #fechaColumn let-comprobanteEntradas="element">
+  <app-cell>
+    {{ comprobanteEntradas.fechaEntrada | date: 'd/M/yyyy' }}
+  </app-cell>
+</ng-template>
+
+<ng-template #nombreColumn let-comprobanteEntradas="element">
+  <app-cell>
+    {{ comprobanteEntradas.proveedor.nombre | titlecase }}
+  </app-cell>
+</ng-template>
+
+<ng-template #documentoColumn let-comprobanteEntradas="element">
+  <app-cell>
+    {{ comprobanteEntradas.documento }}
+  </app-cell>
+</ng-template>
+
+<ng-template #gestionColumn let-comprobanteEntradas="element">
+  <app-cell>
+    {{ comprobanteEntradas.gestion.fechaApertura | date: 'Y' }}
+    - {{ comprobanteEntradas.gestion.fechaApertura | date: 'd/M/yyyy'
+    }}{{ comprobanteEntradas.gestion.fechaCierre ? ' - ' : ''
+    }}{{ comprobanteEntradas.gestion.fechaCierre | date: 'd/M/yyyy' }}
+  </app-cell>
+</ng-template>
+
+<ng-template #createComprobanteEntradasButton>
+  <button (click)="openComprobantesEntradasDialog()" appButton color="primary">
+    <app-icon name="add"></app-icon>
+    Registrar entradas
+  </button>
+</ng-template>
+
+<ng-template #filterInput>
+  <app-form-field>
+    <app-label>Nombre / Documento</app-label>
+    <app-icon name="research" appPrefix></app-icon>
+    <input
+      appInput
+      (ngModelChange)="termSubject.next($event)"
+      [(ngModel)]="term"
+    />
+  </app-form-field>
+</ng-template>

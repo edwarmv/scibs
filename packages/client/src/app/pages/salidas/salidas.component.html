@@ -1,0 +1,54 @@
+<div class="main-content-wrap">
+  <app-header headerTitle="Salidas">
+    <button action appButtonOutline>
+      <app-icon name="cube"></app-icon>
+      Ver material
+    </button>
+    <button action appButtonOutline>
+      <app-icon name="turn-down-left"></app-icon>
+      Ver entradas
+    </button>
+    <button action appButtonOutline>
+      <app-icon name="balance"></app-icon>
+      Ver saldos
+    </button>
+    <button action appButton color="primary">
+      <app-icon name="add"></app-icon>
+      Registrar salidas
+    </button>
+
+    <form appBrowser [formGroup]="form">
+      <app-form-field>
+        <app-label>Documento</app-label>
+        <app-icon name="research" appPrefix></app-icon>
+        <input appInput formControlName="argumento" />
+        <button appSuffix appIconButton type="button">
+          <app-icon name="equalizer"></app-icon>
+        </button>
+      </app-form-field>
+    </form>
+
+    <app-checkbox appFilter>Materiales vencidos</app-checkbox>
+
+    <app-dropdown
+      appFilter
+      [defaultValue]="materiales[0]"
+      [data]="materiales"
+    ></app-dropdown>
+
+    <app-dropdown
+      appFilter
+      [defaultValue]="gestiones[0]"
+      [data]="gestiones"
+      [showFilter]="true"
+    ></app-dropdown>
+  </app-header>
+
+  <app-tab>
+    <app-tab-item path="/salidas">Salidas</app-tab-item>
+    <app-tab-item path="/salidas/solicitantes">Solicitantes</app-tab-item>
+    <app-tab-item path="/salidas/comprobantes">Comprobantes</app-tab-item>
+  </app-tab>
+
+  <router-outlet class="hidden"></router-outlet>
+</div>

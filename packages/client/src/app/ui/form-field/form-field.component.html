@@ -1,0 +1,54 @@
+<div
+  style="height: 56px"
+  class="transition bg-white flex gap-2 rounded-xl border border-gray-150 overflow-hidden px-4 py-2 hover:border-red-200"
+  [ngClass]="{
+    'border-red-700': _control.focused,
+    'hover:border-red-200': !_control.focused
+  }"
+  cdkOverlayOrigin
+  #trigger="cdkOverlayOrigin"
+>
+  <ng-content select="[appPrefix]"></ng-content>
+  <div class="mx-2 flex flex-col grow relative border-t-[1rem] border-white">
+    <ng-content></ng-content>
+    <span
+      class="absolute w-full h-full pointer-events-none transition-transform bottom-2"
+      [ngClass]="{
+        'translate-y-[-0.6rem]':
+          _control.focused ||
+          _control.ngControl?.value ||
+          _control.ngControl?.value === 0 ||
+          input.el.nativeElement.type === 'date'
+      }"
+    >
+      <label [attr.for]="_control.id" class="block text-sm text-gray-300">
+        <ng-content select="app-label"></ng-content>
+      </label>
+    </span>
+  </div>
+  <ng-content select="[appSuffix]"></ng-content>
+</div>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="trigger"
+  [cdkConnectedOverlayOpen]="!!autocompleteDataCb && isInputFocused"
+>
+  <div class="p-2 bg-white mt-2 default-box-shadow rounded-xl">
+    <cdk-virtual-scroll-viewport
+      itemSize="24"
+      class="overflow-scroll h-[100px] w-[200px]"
+    >
+      <div
+        *cdkVirtualFor="let item of autocompleteDataSource"
+        class="whitespace-nowrap cursor-default hover:bg-red-100"
+        (click)="item && autocompleteValueChange.emit(item.value)"
+      >
+        {{ item ? item.label : 'Cargando...' }}
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </div>
+</ng-template>
+
+<ng-content select="app-hint" *ngIf="_errors.length === 0"></ng-content>
+<ng-content select="app-error"></ng-content>

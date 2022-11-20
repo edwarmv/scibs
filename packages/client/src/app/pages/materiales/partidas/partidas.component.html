@@ -1,0 +1,33 @@
+<app-table
+  (onDblClickRow)="onDblClickRow($event)"
+  (onBsRow)="onBsRow($event)"
+  [fetchDataCb]="fetchDataCb"
+  [columns]="columns"
+></app-table>
+
+<ng-template #nombreColumn let-partida="element">
+  <app-cell>
+    {{ partida.nombre | titlecase }}
+  </app-cell>
+</ng-template>
+
+<ng-template #numeroColumn let-partida="element">
+  <app-cell>
+    {{ partida.numero }}
+  </app-cell>
+</ng-template>
+
+<ng-template #createPartidaButton>
+  <button (click)="registrarPartida()" appButton color="primary">
+    <app-icon name="add"></app-icon>
+    Registrar partida
+  </button>
+</ng-template>
+
+<ng-template #filterInput>
+  <app-form-field>
+    <app-label>Nombre / Número</app-label>
+    <app-icon name="research" appPrefix></app-icon>
+    <input appInput (ngModelChange)="termSubject.next($event)" [(ngModel)]="term" />
+  </app-form-field>
+</ng-template>

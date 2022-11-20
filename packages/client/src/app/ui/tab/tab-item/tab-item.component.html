@@ -1,0 +1,25 @@
+<div
+  class="border-b-[3px]"
+  [ngClass]="{
+    'border-[transparent]': !rla.isActive,
+    'border-red-700': rla.isActive
+  }"
+>
+  <a
+    [routerLink]="path"
+    routerLinkActive
+    #rla="routerLinkActive"
+    [routerLinkActiveOptions]="{ exact: true }"
+    class="flex gap-[10px] items-center p-[12px] button-medium"
+    [ngClass]="{ 'text-red-700': rla.isActive }"
+  >
+    <ng-content></ng-content>
+    <app-badge
+      [color]="rla.isActive ? 'red' : 'gray'"
+      colorStyle="light"
+      *ngIf="showCounter"
+    >
+      {{ count }}
+    </app-badge>
+  </a>
+</div>
