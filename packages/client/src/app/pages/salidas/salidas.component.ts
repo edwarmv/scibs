@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { DropdownItem } from '@ui/dropdown/dropdown-item/dropdown-item.component';
+import { Subject } from 'rxjs';
+import { ComprobantesSalidasComponent } from './comprobantes-salidas/comprobantes-salidas.component';
+import { SalidasComponent as SalidasComponentChild } from './salidas/salidas.component'
+import { SolicitantesComponent } from './solicitantes/solicitantes.component';
 
 @Component({
   selector: 'app-salidas',
@@ -8,52 +12,67 @@ import { DropdownItem } from '@ui/dropdown/dropdown-item/dropdown-item.component
   styleUrls: ['./salidas.component.scss']
 })
 export class SalidasComponent implements OnInit {
-  form = this.fb.nonNullable.group({
-    argumento: [''],
-  });
+  actions: TemplateRef<any>[] = [];
+  browser: TemplateRef<any> | null = null;
+  filters: TemplateRef<any>[] = [];
 
-  materiales: DropdownItem<string>[] = [
-    {
-      label: 'Algodón',
-      value: 'Algodón',
-    },
-    {
-      label: 'Jeringas',
-      value: 'Jeringas',
-    },
-    {
-      label: 'Barbijos',
-      value: 'Barbijos',
-    },
-    {
-      label: 'Alcohol',
-      value: 'Alcohol',
-    },
-  ]
+  totalEntradas = 0;
+  totalProveedores = 0;
+  totalComprobantes = 0;
 
-  gestiones: DropdownItem<string>[] = [
-    {
-      label: '2022',
-      value: '2022',
-    },
-    {
-      label: '2021',
-      value: '2021',
-    },
-    {
-      label: '2020',
-      value: '2020',
-    },
-    {
-      label: '2019',
-      value: '2019',
-    },
-  ];
+  unsubscribe$ = new Subject<void>();
 
-
-  constructor(private fb: FormBuilder) { }
+  constructor(
+    private cd: ChangeDetectorRef,
+    // private entradasService: EntradasService,
+    // private proveedoresService: ProveedoresService,
+    // private comprobantesEntradasService: ComprobantesEntradasService
+  ) {}
 
   ngOnInit(): void {
+    // this.entradasService.total$
+    //   .pipe(takeUntil(this.unsubscribe$))
+    //   .subscribe((total) => (this.totalEntradas = total));
+    //
+    // this.proveedoresService.total$
+    //   .pipe(takeUntil(this.unsubscribe$))
+    //   .subscribe((total) => (this.totalProveedores = total));
+    //
+    // this.comprobantesEntradasService.total$
+    //   .pipe(takeUntil(this.unsubscribe$))
+    //   .subscribe((total) => (this.totalComprobantes = total));
   }
 
+  onActivate(component: unknown) {
+    this.actions = [];
+    this.browser = null;
+    this.filters = [];
+    if (component instanceof SalidasComponentChild) {
+      // this.actions = [
+      //   component.cargarSaldosAction,
+      //   component.verMaterialAction,
+      //   component.verSalidasAction,
+      //   component.verSaldosAction,
+      //   component.registrarEntradasAction,
+      // ];
+      // this.browser = component.browser;
+      // this.filters = [
+      //   component.saldosInicialesFilter,
+      //   component.materialesFilter,
+      //   component.gestionesFilter,
+      // ];
+    } else if (component instanceof SolicitantesComponent) {
+      this.actions = [component.createSolicitanteButton];
+      this.browser = component.filterInput;
+    } else if (component instanceof ComprobantesSalidasComponent) {
+      this.actions = [component.createComprobanteSalidasButton];
+      this.browser = component.filterInput;
+    }
+    this.cd.detectChanges();
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
 }

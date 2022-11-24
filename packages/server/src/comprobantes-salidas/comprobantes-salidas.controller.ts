@@ -1,7 +1,8 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User } from 'src/auth/user.decorator';
 import { UserModel } from 'src/auth/user.model';
+import { ComprobanteSalidas } from './comprobante-salidas.entity';
 import { ComprobantesSalidasService } from './comprobantes-salidas.service';
 import { CreateComprobanteSalidasDto } from './dto/create-comprobante-salidas.dto';
 
@@ -19,5 +20,12 @@ export class ComprobantesSalidasController {
       user,
       createComprobanteSalidasDto
     );
+  }
+
+  @Get()
+  async findAll(
+    @Query() query: { skip: number; take: number; term: string }
+  ): Promise<{ values: ComprobanteSalidas[]; total: number }> {
+    return this.comprobantesSalidasService.findAll(query);
   }
 }

@@ -76,4 +76,25 @@ export class UsuariosService {
         })
       );
   }
+
+  update(
+    idUsuario: number,
+    usuario: { nombre: string; apellido: string; username: string }
+  ): Observable<Usuario> {
+    return this.http
+      .put<Usuario>(`${this.apiEndpoint}/${idUsuario}`, usuario)
+      .pipe(
+        take(1),
+        catchError((error) => {
+          if (error.status === 409) {
+            this.snackBarService.open({
+              message: error.error.message,
+              style: 'error',
+              duration: 3000,
+            });
+          }
+          return throwError(() => new Error(error));
+        })
+      );
+  }
 }

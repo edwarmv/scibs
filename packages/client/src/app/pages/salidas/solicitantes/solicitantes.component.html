@@ -1,1 +1,55 @@
-<p>solicitantes works!</p>
+<app-table
+  (onDblClickRow)="openSolicitanteDialog($event)"
+  (onBsRow)="onBsRow($event)"
+  [fetchDataCb]="fetchDataCb"
+  [columns]="columns"
+></app-table>
+
+<ng-template #apellidoColumn let-solicitante="element">
+  <app-cell>
+    {{ solicitante.apellido | titlecase }}
+  </app-cell>
+</ng-template>
+
+<ng-template #nombreColumn let-solicitante="element">
+  <app-cell>
+    {{ solicitante.nombre | titlecase }}
+  </app-cell>
+</ng-template>
+
+<ng-template #ciColumn let-solicitante="element">
+  <app-cell>
+    {{ solicitante.ci }}
+  </app-cell>
+</ng-template>
+
+<ng-template #verSalidasColumn let-solicitante="element">
+  <app-cell>
+    <button
+      appIconButton
+      color="primary"
+      (click)="openVerComprobanteDialog(solicitante)"
+    >
+      <app-icon name="eye"></app-icon>
+    </button>
+  </app-cell>
+</ng-template>
+
+<ng-template #createSolicitanteButton>
+  <button (click)="openSolicitanteDialog()" appButton color="primary">
+    <app-icon name="add"></app-icon>
+    Registrar solicitante
+  </button>
+</ng-template>
+
+<ng-template #filterInput>
+  <app-form-field>
+    <app-label>Apellido / Nombre</app-label>
+    <app-icon name="research" appPrefix></app-icon>
+    <input
+      appInput
+      (ngModelChange)="termSubject.next($event)"
+      [(ngModel)]="term"
+    />
+  </app-form-field>
+</ng-template>

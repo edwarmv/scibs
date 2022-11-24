@@ -74,7 +74,7 @@ export class ProveedoresService {
     } catch (error) {
       if (error instanceof QueryFailedError) {
         if (error.driverError.errno === 19) {
-          throw new ConflictException('Proveedor con entradas asociados');
+          throw new ConflictException('Proveedor con entradas asociadas');
         }
       }
     }

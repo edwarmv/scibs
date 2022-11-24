@@ -8,7 +8,7 @@ import { OrdenOperacionesService } from 'src/orden-operaciones/orden-operaciones
 import { CreateSalidaDto } from 'src/salidas/dto/create-salida.dto';
 import { SalidasService } from 'src/salidas/salidas.service';
 import { Usuario } from 'src/usuarios/usuario.entity';
-import { DataSource, QueryFailedError, Repository } from 'typeorm';
+import { DataSource, Like, QueryFailedError, Repository } from 'typeorm';
 import { ComprobanteSalidas } from './comprobante-salidas.entity';
 import { CreateComprobanteSalidasDto } from './dto/create-comprobante-salidas.dto';
 import { UpdateComprobanteSalidaDto } from './dto/update-comprobante-salidas.dto';
@@ -121,6 +121,34 @@ export class ComprobantesSalidasService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async findAll({
+    skip = 0,
+    take = 5,
+    term = '',
+  }: {
+    skip: number;
+    take: number;
+    term: string;
+  }): Promise<{ values: ComprobanteSalidas[]; total: number }> {
+    const [values, total] =
+      await this.comprobanteSalidasRepository.findAndCount({
+        skip,
+        take,
+        relations: {
+          solicitante: true,
+          gestion: true,
+          salidas: { material: true },
+        },
+        where: [
+          { solicitante: { apellido: Like(`%${term}%`) } },
+          { solicitante: { nombre: Like(`%${term}%`) } },
+          { documento: Like(`%${term}%`) },
+        ],
+        order: { fechaSalida: 'DESC' },
+      });
+    return { values, total };
   }
 
   private throwDbConstraintError(error: QueryFailedError) {

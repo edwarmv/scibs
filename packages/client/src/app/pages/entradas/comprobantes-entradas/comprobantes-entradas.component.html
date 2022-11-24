@@ -11,7 +11,7 @@
   </app-cell>
 </ng-template>
 
-<ng-template #nombreColumn let-comprobanteEntradas="element">
+<ng-template #proveedorColumn let-comprobanteEntradas="element">
   <app-cell>
     {{ comprobanteEntradas.proveedor.nombre | titlecase }}
   </app-cell>
@@ -41,7 +41,7 @@
 
 <ng-template #filterInput>
   <app-form-field>
-    <app-label>Nombre / Documento</app-label>
+    <app-label>Proveedor / Documento</app-label>
     <app-icon name="research" appPrefix></app-icon>
     <input
       appInput

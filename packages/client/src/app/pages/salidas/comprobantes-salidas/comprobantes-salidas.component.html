@@ -1,1 +1,53 @@
-<p>comprobantes-salidas works!</p>
+<app-table
+  (onDblClickRow)="openComprobantesEntradasDialog($event)"
+  (onBsRow)="onBsRow($event)"
+  [fetchDataCb]="fetchDataCb"
+  [columns]="columns"
+></app-table>
+
+<ng-template #fechaColumn let-comprobanteSalidas="element">
+  <app-cell>
+    {{ comprobanteSalidas.fechaSalida | date: 'd/M/yyyy' }}
+  </app-cell>
+</ng-template>
+
+<ng-template #solicitanteColumn let-comprobanteSalidas="element">
+  <app-cell>
+    {{ comprobanteSalidas.solicitante.apellido | titlecase }}
+    {{ comprobanteSalidas.solicitante.nombre | titlecase }}
+  </app-cell>
+</ng-template>
+
+<ng-template #documentoColumn let-comprobanteSalidas="element">
+  <app-cell>
+    {{ comprobanteSalidas.documento }}
+  </app-cell>
+</ng-template>
+
+<ng-template #gestionColumn let-comprobanteSalidas="element">
+  <app-cell>
+    {{ comprobanteSalidas.gestion.fechaApertura | date: 'Y' }}
+    - {{ comprobanteSalidas.gestion.fechaApertura | date: 'd/M/yyyy'
+    }}{{ comprobanteSalidas.gestion.fechaCierre ? ' - ' : ''
+    }}{{ comprobanteSalidas.gestion.fechaCierre | date: 'd/M/yyyy' }}
+  </app-cell>
+</ng-template>
+
+<ng-template #createComprobanteSalidasButton>
+  <button (click)="openComprobantesEntradasDialog()" appButton color="primary">
+    <app-icon name="add"></app-icon>
+    Registrar salidas
+  </button>
+</ng-template>
+
+<ng-template #filterInput>
+  <app-form-field>
+    <app-label>Solicitante / Documento</app-label>
+    <app-icon name="research" appPrefix></app-icon>
+    <input
+      appInput
+      (ngModelChange)="termSubject.next($event)"
+      [(ngModel)]="term"
+    />
+  </app-form-field>
+</ng-template>

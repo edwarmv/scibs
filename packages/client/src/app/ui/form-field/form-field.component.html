@@ -32,7 +32,7 @@
 <ng-template
   cdkConnectedOverlay
   [cdkConnectedOverlayOrigin]="trigger"
-  [cdkConnectedOverlayOpen]="!!autocompleteDataCb && isInputFocused"
+  [cdkConnectedOverlayOpen]="!!autocompleteDataCb && isAutocompleteOpen"
 >
   <div class="p-2 bg-white mt-2 default-box-shadow rounded-xl">
     <cdk-virtual-scroll-viewport
@@ -42,7 +42,11 @@
       <div
         *cdkVirtualFor="let item of autocompleteDataSource"
         class="whitespace-nowrap cursor-default hover:bg-red-100"
-        (click)="item && autocompleteValueChange.emit(item.value)"
+        (mousedown)="$event.preventDefault()"
+        (click)="
+          item && autocompleteValueChange.emit(item.value);
+          isAutocompleteOpen = false
+        "
       >
         {{ item ? item.label : 'Cargando...' }}
       </div>

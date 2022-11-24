@@ -17,7 +17,7 @@ import { TableModule } from '@ui/table/table.module';
 import { RegistrarEntradasComponent } from './dialog/registrar-entradas/registrar-entradas.component';
 import { DialogModule } from '@ui/dialog/dialog.module';
 import { ComprobantesEntradasComponent } from './comprobantes-entradas/comprobantes-entradas.component';
-import { ProveedoresDialogComponent } from '@pages/proveedores/proveedores-dialog/proveedores-dialog.component';
+import { ProveedoresDialogComponent } from './proveedores/proveedores-dialog/proveedores-dialog.component';
 import { ComprobantesEntradasDialogComponent } from './comprobantes-entradas/comprobantes-entradas-dialog/comprobantes-entradas-dialog.component';
 
 const routes: Routes = [

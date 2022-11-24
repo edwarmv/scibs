@@ -1,0 +1,48 @@
+<div class="default-dialog-content">
+  <app-dialog-title *ngIf="data; else defaultTitle">
+    {{ data.nombre | titlecase }}
+  </app-dialog-title>
+
+  <ng-template #defaultTitle>
+    <app-dialog-title>Registrar solicitante</app-dialog-title>
+  </ng-template>
+
+  <app-dialog-content>
+    <form
+      class="default-form"
+      [formGroup]="solicitanteForm"
+      (keydown.enter)="onSubmit()"
+    >
+      <app-form-field>
+        <app-label>Nombre</app-label>
+        <input appInput formControlName="nombre" />
+        <app-error *ngIf="nombre?.hasError('required')">
+          Campo requerido
+        </app-error>
+      </app-form-field>
+
+      <app-form-field>
+        <app-label>Apellido</app-label>
+        <input appInput formControlName="apellido" />
+        <app-error *ngIf="apellido?.hasError('required')">
+          Campo requerido
+        </app-error>
+      </app-form-field>
+
+      <app-form-field>
+        <app-label>C.I.</app-label>
+        <input appInput formControlName="ci" />
+        <app-error *ngIf="ci?.hasError('required')">Campo requerido</app-error>
+      </app-form-field>
+    </form>
+  </app-dialog-content>
+
+  <app-dialog-actions>
+    <button appButton (click)="close()" type="button" color="secondary">
+      Cancelar
+    </button>
+    <button appButton type="button" (click)="onSubmit()" color="primary">
+      {{ data ? 'Actualizar' : 'Registrar' }}
+    </button>
+  </app-dialog-actions>
+</div>

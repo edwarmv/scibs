@@ -1,10 +1,10 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import {
-  VerComprobanteDialogComponent,
-  VerComprobanteDialogData,
-} from '@components/ver-comprobante-dialog/ver-comprobante-dialog.component';
-import { ProveedoresDialogComponent } from '@pages/proveedores/proveedores-dialog/proveedores-dialog.component';
+  VerComprobanteEntradasDialogComponent,
+  VerComprobanteEntradasDialogData,
+} from '@components/ver-comprobante-entradas-dialog/ver-comprobante-entradas-dialog.component';
+import { ProveedoresDialogComponent } from './proveedores-dialog/proveedores-dialog.component';
 import { ConfirmDialogService } from '@ui/confirm-dialog/confirm-dialog.service';
 import { Column } from '@ui/table/table.component';
 import { TableDataSourceCb } from '@ui/table/table.data-source';
@@ -80,15 +80,11 @@ export class ProveedoresComponent implements OnInit {
   }
 
   openVerComprobanteDialog(proveedor: Proveedor) {
-    this.dialog.open<void, VerComprobanteDialogData>(
-      VerComprobanteDialogComponent,
+    this.dialog.open<void, VerComprobanteEntradasDialogData>(
+      VerComprobanteEntradasDialogComponent,
       {
         data: {
-          type: 'entradas',
-          subject: {
-            nombre: proveedor.nombre,
-            identificador: proveedor.nitCi,
-          },
+          proveedor: proveedor,
         },
       }
     );
@@ -97,7 +93,7 @@ export class ProveedoresComponent implements OnInit {
   onBsRow(value: Proveedor) {
     this.confirmDialogService
       .open({
-        title: 'Eliminar material',
+        title: 'Eliminar proveedor',
         message: `¿Desea eliminar el proveedor: ${titleCase(
           value.nombre
         )} con NIT / C.I. ${value.nitCi}?`,

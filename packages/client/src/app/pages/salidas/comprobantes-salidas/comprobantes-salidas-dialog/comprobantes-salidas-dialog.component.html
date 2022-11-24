@@ -1,9 +1,9 @@
 <div class="flex flex-col gap-5">
-  <div class="headline">Entradas</div>
+  <div class="headline">Salidas</div>
 
   <form
     class="flex flex-col gap-5"
-    [formGroup]="comprobanteEntradasForm"
+    [formGroup]="comprobanteSalidasForm"
     (ngSubmit)="onSubmit()"
   >
     <div class="flex gap-5">
@@ -16,14 +16,14 @@
       </app-form-field>
 
       <app-form-field>
-        <app-label>Fecha de entrada</app-label>
-        <input appInput type="date" formControlName="fechaEntrada" />
-        <app-error *ngIf="fechaEntrada?.hasError('required')">
+        <app-label>Fecha de salida</app-label>
+        <input appInput type="date" formControlName="fechaSalida" />
+        <app-error *ngIf="fechaSalida?.hasError('required')">
           Campo requerido
         </app-error>
       </app-form-field>
 
-      <app-checkbox formControlName="saldoInicial">Saldo inicial</app-checkbox>
+      <app-checkbox formControlName="vencido">Vencido</app-checkbox>
     </div>
 
     <div class="flex gap-5">
@@ -41,15 +41,15 @@
         </app-form-field>
       </ng-container>
 
-      <ng-container formGroupName="proveedor">
+      <ng-container formGroupName="solicitante">
         <app-form-field
           class="grow"
-          [autocompleteDataCb]="proveedoresAutocompleteCb"
-          (autocompleteValueChange)="onProveedorChange($event)"
+          [autocompleteDataCb]="solicitantesAutocompleteCb"
+          (autocompleteValueChange)="onSolicitanteChange($event)"
         >
-          <app-label>Proveedor</app-label>
+          <app-label>Solicitante</app-label>
           <input appInput formControlName="nombre" />
-          <app-error *ngIf="proveedor?.get('id')?.hasError('required')">
+          <app-error *ngIf="solicitante?.get('id')?.hasError('required')">
             Campo requerido
           </app-error>
         </app-form-field>
@@ -59,37 +59,32 @@
     <div class="flex items-center gap-5">
       <div class="flex flex-col">
         <div class="subheadline">
-          Materiales ({{ entradas.controls.length }})
+          Materiales ({{ salidas.controls.length }})
         </div>
         <app-error
           *ngIf="
-            !entradas.hasError('arrayDuplicate') &&
-            !entradas.hasError('arrayMin') &&
-            entradas.invalid
+            !salidas.hasError('arrayDuplicate') &&
+            !salidas.hasError('arrayMin') &&
+            salidas.invalid
           "
         >
-          Entradas con errores
+          Salidas con errores
         </app-error>
-        <app-error *ngIf="entradas.hasError('arrayMin')">
+        <app-error *ngIf="salidas.hasError('arrayMin')">
           Al menos debe agregar un material
         </app-error>
-        <app-error *ngIf="entradas.hasError('arrayDuplicate')">
-          Entradas duplicadas
+        <app-error *ngIf="salidas.hasError('arrayDuplicate')">
+          Salidas duplicadas
         </app-error>
       </div>
 
-      <button
-        type="button"
-        (click)="addEntrada()"
-        appIconButton
-        color="primary"
-      >
+      <button type="button" (click)="addSalida()" appIconButton color="primary">
         <app-icon name="add"></app-icon>
       </button>
     </div>
 
     <div
-      *ngIf="entradas.controls.length > 0"
+      *ngIf="salidas.controls.length > 0"
       class="w-full max-h-[500px] overflow-auto"
     >
       <table
@@ -99,19 +94,18 @@
           <tr class="bg-gray-100 text-gray-400 h-[40px] body-small">
             <th class="text-left px-4 rounded-l-[16px]">Nº</th>
             <th class="text-left pr-4">Material</th>
-            <th class="text-left pr-4">Precio unitario (Bs.)</th>
             <th class="text-left pr-4 rounded-r-[16px]">Cantidad</th>
           </tr>
         </thead>
 
-        <tbody formArrayName="entradas">
+        <tbody formArrayName="salidas">
           <tr
             [tabindex]="i + 1"
             (focus)="focusedRow = true"
             (blur)="focusedRow = false"
             (keydown.backspace)="focusedRow && removeEntrada(i)"
-            *ngFor="let entrada of entradas.controls; let i = index"
-            [formGroup]="entrada"
+            *ngFor="let salida of salidas.controls; let i = index"
+            [formGroup]="salida"
             class="hover:default-box-shadow focus:ring-1 focus:ring-red-700 rounded-[16px] outline-none"
           >
             <td class="px-4 py-3">{{ i + 1 }}</td>
@@ -129,29 +123,10 @@
                 />
                 <app-error
                   *ngIf="
-                    entrada.get('material')?.get('id')?.hasError('required')
+                    salida.get('material')?.get('id')?.hasError('required')
                   "
                 >
                   Campo requerido
-                </app-error>
-              </app-form-field>
-            </td>
-
-            <td class="pr-4 py-3">
-              <app-form-field>
-                <app-label>Precio unitario (Bs.)</app-label>
-                <input
-                  type="number"
-                  (keydown.backspace)="$event.stopPropagation()"
-                  appInput
-                  formControlName="precioUnitario"
-                />
-                <app-error
-                  *ngIf="
-                    entrada.get('precioUnitario')?.hasError('numberGreaterThan')
-                  "
-                >
-                  El valor debe ser mayor a cero
                 </app-error>
               </app-form-field>
             </td>
@@ -166,9 +141,12 @@
                   formControlName="cantidad"
                 />
                 <app-error
-                  *ngIf="entrada.get('cantidad')?.hasError('numberGreaterThan')"
+                  *ngIf="salida.get('cantidad')?.hasError('numberGreaterThan')"
                 >
                   El valor debe ser mayor a cero
+                </app-error>
+                <app-error *ngIf="salida.hasError('materialStock')">
+                  Stock: {{ salida.getError('materialStock').stock }}
                 </app-error>
               </app-form-field>
             </td>

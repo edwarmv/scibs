@@ -13,6 +13,7 @@ export class EntradasService {
     skip = 0,
     take = 5,
     term = '',
+    proveedorId = '',
     gestionId = '',
     materialId = '',
     saldoInicial = '',
@@ -20,11 +21,25 @@ export class EntradasService {
     skip: number;
     take: number;
     term: string;
+    proveedorId: string;
     gestionId: string;
     materialId: string;
     saldoInicial: string;
   }): Promise<{ values: Entrada[]; total: number }> {
     saldoInicial = saldoInicial === 'true' ? '1' : '';
+    const filters: string[] = [];
+    if (proveedorId) {
+      filters.push('proveedor.id = :proveedorId');
+    }
+    if (gestionId) {
+      filters.push('gestion.id = :gestionId');
+    }
+    if (materialId) {
+      filters.push('material.id = :materialId');
+    }
+    if (saldoInicial) {
+      filters.push('comprobanteEntradas.saldoInicial = 1');
+    }
     const [values, total] = await this.entradaRepository
       .createQueryBuilder('entrada')
       .leftJoinAndSelect('entrada.material', 'material')
@@ -36,15 +51,9 @@ export class EntradasService {
       .take(take)
       .where(
         `(STRFTIME('%d/%m/%Y', comprobanteEntradas.fechaEntrada) LIKE :term OR proveedor.nombre LIKE :term OR comprobanteEntradas.documento LIKE :term)${
-          gestionId || materialId || saldoInicial ? ' AND (' : ''
-        }${gestionId ? 'gestion.id = :gestionId' : ''}${
-          gestionId && materialId ? ' AND ' : ''
-        }${materialId ? 'material.id = :materialId' : ''}${
-          gestionId && materialId && saldoInicial ? ' AND ' : ''
-        }${saldoInicial ? 'comprobanteEntradas.saldoInicial = 1' : ''}${
-          gestionId || materialId || saldoInicial ? ')' : ''
-        }`,
-        { gestionId, materialId, saldoInicial, term: `%${term}%` }
+          filters.length > 0 ? ' AND ' : ''
+        }${filters.length > 0 ? '(' + filters.join(' AND ') + ')' : ''}`,
+        { proveedorId, gestionId, materialId, saldoInicial, term: `%${term}%` }
       )
       .orderBy('comprobanteEntradas.fechaEntrada', 'ASC')
       .addOrderBy('ordenOperacion.orden', 'ASC')

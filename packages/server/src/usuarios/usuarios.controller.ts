@@ -36,8 +36,8 @@ export class UsuariosController {
   async update(
     @Param('idUsuario', ParseIntPipe) idUsuario: number,
     @Body() updateUsuarioDto: UpdateUsuarioDto
-  ) {
-    await this.usuariosService.update(idUsuario, updateUsuarioDto);
+  ): Promise<Usuario> {
+    return await this.usuariosService.update(idUsuario, updateUsuarioDto);
   }
 
   @UseGuards(JwtAuthGuard)

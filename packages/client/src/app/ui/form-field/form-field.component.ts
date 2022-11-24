@@ -10,7 +10,7 @@ import {
   Output,
 } from '@angular/core';
 import { InputDirective } from '@ui/input/input.directive';
-import { debounceTime, Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import {
   AutocompleteDataSource,
   AutocompleteDataSourceCb,
@@ -36,7 +36,7 @@ export class FormFieldComponent implements OnInit, AfterContentInit, OnDestroy {
   @Input()
   autocompleteDataCb?: AutocompleteDataSourceCb<any>;
   autocompleteDataSource: AutocompleteDataSource<any>;
-  isInputFocused = false;
+  isAutocompleteOpen = false;
 
   @Output()
   autocompleteValueChange = new EventEmitter<any>();
@@ -54,12 +54,18 @@ export class FormFieldComponent implements OnInit, AfterContentInit, OnDestroy {
         });
 
       this.input.focused$
-        .pipe(takeUntil(this.unsubscribe$), debounceTime(100))
-        .subscribe((focused) => {
-          this.isInputFocused = focused;
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((value) => {
+          this.isAutocompleteOpen = value;
         });
+
+      this.input.el.nativeElement.addEventListener('click', this.onClickInput);
     }
   }
+
+  onClickInput = (ev: MouseEvent) => {
+    this.isAutocompleteOpen = true;
+  };
 
   ngOnInit(): void {
     if (this.autocompleteDataCb) {
@@ -72,5 +78,6 @@ export class FormFieldComponent implements OnInit, AfterContentInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+    this.input.el.nativeElement.removeEventListener('click', this.onClickInput);
   }
 }

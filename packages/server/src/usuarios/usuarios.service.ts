@@ -36,13 +36,15 @@ export class UsuariosService {
   async update(
     idUsuario: number,
     { nombre, apellido, username }: UpdateUsuarioDto
-  ): Promise<void> {
+  ): Promise<Usuario> {
     try {
       await this.usuarioRepository.update(idUsuario, {
         nombre: nombre.toLowerCase(),
         apellido: apellido.toLowerCase(),
         username: username.toLowerCase(),
       });
+
+      return await this.usuarioRepository.findOneBy({ id: idUsuario });
     } catch (error) {
       if (error instanceof QueryFailedError) {
         if (error.driverError.errno === 19) {

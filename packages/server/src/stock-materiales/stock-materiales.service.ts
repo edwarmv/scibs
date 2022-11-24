@@ -32,7 +32,7 @@ export class StockMaterialesService {
       .select('SUM(stockMaterial.stock)', 'stock')
       .where('stockMaterial.idMaterial = :idMaterial', { idMaterial })
       .getRawOne();
-    return stock;
+    return Number(stock);
   }
 
   async getStockMaterialByCantidad(

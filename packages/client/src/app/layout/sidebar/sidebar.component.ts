@@ -1,8 +1,10 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Usuario } from 'src/app/models/usuario.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { SidebarService } from './sidebar.service';
+import { UsuarioDialogComponent } from './usuario-dialog/usuario-dialog.component';
 
 @Component({
   selector: 'app-sidebar',
@@ -16,7 +18,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
   constructor(
     public sidebarService: SidebarService,
     private authService: AuthService,
-    private usuariosService: UsuariosService
+    private usuariosService: UsuariosService,
+    private dialog: Dialog
   ) {}
 
   ngOnInit(): void {
@@ -53,6 +56,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   logout() {
     this.authService.logout();
+  }
+
+  openUsuarioDialog() {
+    this.dialog
+      .open<Usuario>(UsuarioDialogComponent)
+      .closed.subscribe((usuario) => {
+        if (usuario) {
+          this.usuario = usuario;
+        }
+      });
   }
 
   ngOnDestroy() {

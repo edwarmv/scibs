@@ -58,12 +58,14 @@
       <app-avatar
         id="avatar-user-menu"
         (click)="sidebarService.collapsed && toggleUserMenu()"
-        [initials]="usuario.nombre.charAt(0) + usuario.apellido.charAt(0) | uppercase"
+        [initials]="
+          usuario.nombre.charAt(0) + usuario.apellido.charAt(0) | uppercase
+        "
       ></app-avatar>
 
       <div *ngIf="!sidebarService.collapsed">
         <div class="body-small-bold">
-          {{ usuario.nombre + ' ' + usuario.apellido | titlecase}}
+          {{ usuario.nombre + ' ' + usuario.apellido | titlecase }}
         </div>
         <div class="caption text-gray-400">{{ usuario.username }}</div>
       </div>
@@ -84,16 +86,19 @@
       class="body-small absolute whitespace-nowrap right-0 top-0 translate-x-full translate-y-[-100%] bg-white rounded-[16px] default-box-shadow p-[25px] flex flex-col gap-[20px]"
       *ngIf="showUserMenu"
     >
-      <div>Ver usuario</div>
+      <div
+        class="cursor-default hover:opacity-50"
+        (click)="openUsuarioDialog()"
+      >
+        Ver usuario
+      </div>
 
-      <button
+      <div
         (click)="logout()"
-        appButtonOutline
-        color="primary"
-        class="text-red-700"
+        class="cursor-default text-red-700 hover:opacity-50"
       >
         Cerrar sesión
-      </button>
+      </div>
     </div>
   </div>
 </div>

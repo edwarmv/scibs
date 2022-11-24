@@ -5,7 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HeaderModule } from '@layout/header/header.module';
 import { IconModule } from '@ui/icon/icon.module';
 import { FormFieldModule } from '@ui/form-field/form-field.module';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CheckboxModule } from '@ui/checkbox/checkbox.module';
 import { DropdownModule } from '@ui/dropdown/dropdown.module';
 import { TabModule } from '@ui/tab/tab.module';
@@ -14,6 +14,10 @@ import { ButtonModule } from '@ui/button/button.module';
 import { SolicitantesComponent } from './solicitantes/solicitantes.component';
 import { SalidasComponent } from './salidas/salidas.component';
 import { ComprobantesSalidasComponent } from './comprobantes-salidas/comprobantes-salidas.component';
+import { TableModule } from '@ui/table/table.module';
+import { SolicitantesDialogComponent } from './solicitantes/solicitantes-dialog/solicitantes-dialog.component';
+import { DialogModule } from '@ui/dialog/dialog.module';
+import { ComprobantesSalidasDialogComponent } from './comprobantes-salidas/comprobantes-salidas-dialog/comprobantes-salidas-dialog.component';
 
 const routes: Routes = [
   {
@@ -41,18 +45,23 @@ const routes: Routes = [
     SalidasMainComponent,
     SalidasComponent,
     SolicitantesComponent,
+    SolicitantesDialogComponent,
     ComprobantesSalidasComponent,
+    ComprobantesSalidasDialogComponent,
   ],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
     ReactiveFormsModule,
+    FormsModule,
     HeaderModule,
     IconModule,
     FormFieldModule,
     InputModule,
     CheckboxModule,
     DropdownModule,
+    TableModule,
+    DialogModule,
     TabModule,
     ButtonModule,
   ],

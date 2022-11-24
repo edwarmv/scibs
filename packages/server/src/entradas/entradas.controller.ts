@@ -15,6 +15,7 @@ export class EntradasController {
       skip: number;
       take: number;
       term: string;
+      proveedorId: string;
       gestionId: string;
       materialId: string;
       saldoInicial: string;

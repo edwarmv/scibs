@@ -1,11 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -30,13 +32,23 @@ export class SolicitantesController {
   async update(
     @Param('idSolicitante', ParseIntPipe) idSolicitante: number,
     @Body() updateSolicitanteDto: UpdateSolicitanteDto
-  ): Promise<void> {
-    await this.solicitantesService.update(idSolicitante, updateSolicitanteDto);
+  ): Promise<Solicitante> {
+    return await this.solicitantesService.update(
+      idSolicitante,
+      updateSolicitanteDto
+    );
   }
 
   @Get()
-  async findAll(): Promise<Solicitante[]> {
-    return this.solicitantesService.findAll();
+  async findAll(
+    @Query()
+    query: {
+      skip: number;
+      take: number;
+      term: string;
+    }
+  ): Promise<{ values: Solicitante[]; total: number }> {
+    return this.solicitantesService.findAll(query);
   }
 
   @Get(':idSolicitante')
@@ -44,5 +56,12 @@ export class SolicitantesController {
     @Param('idSolicitante', ParseIntPipe) idSolicitante: number
   ): Promise<Solicitante> {
     return this.solicitantesService.findOne(idSolicitante);
+  }
+
+  @Delete(':idSolicitante')
+  async remove(
+    @Param('idSolicitante', ParseIntPipe) idSolicitante: number
+  ): Promise<void> {
+    await this.solicitantesService.remove(idSolicitante);
   }
 }

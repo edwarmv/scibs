@@ -18,8 +18,8 @@ export class ComprobantesEntradasComponent implements OnInit {
   columns: Column<ComprobanteEntradas>[] = [];
   @ViewChild('fechaColumn', { static: true })
   fechaColumn: TemplateRef<any>;
-  @ViewChild('nombreColumn', { static: true })
-  nombreColumn: TemplateRef<any>;
+  @ViewChild('proveedorColumn', { static: true })
+  proveedorColumn: TemplateRef<any>;
   @ViewChild('documentoColumn', { static: true })
   documentoColumn: TemplateRef<any>;
   @ViewChild('gestionColumn', { static: true })
@@ -49,8 +49,8 @@ export class ComprobantesEntradasComponent implements OnInit {
         template: this.fechaColumn,
       },
       {
-        name: 'Nombre',
-        template: this.nombreColumn,
+        name: 'Proveedor',
+        template: this.proveedorColumn,
       },
       {
         name: 'Documento',

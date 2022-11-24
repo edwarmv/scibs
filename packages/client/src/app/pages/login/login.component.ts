@@ -22,7 +22,7 @@ type LoginForm = {
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup<LoginForm> = this.fb.nonNullable.group({
-    username: ['edwarM', Validators.required],
+    username: ['edwarmv', Validators.required],
     password: ['qwerasdf', Validators.required],
   });
 

@@ -1,47 +1,16 @@
 <div class="main-content-wrap">
-  <app-header headerTitle="Salidas">
-    <button action appButtonOutline>
-      <app-icon name="cube"></app-icon>
-      Ver material
-    </button>
-    <button action appButtonOutline>
-      <app-icon name="turn-down-left"></app-icon>
-      Ver entradas
-    </button>
-    <button action appButtonOutline>
-      <app-icon name="balance"></app-icon>
-      Ver saldos
-    </button>
-    <button action appButton color="primary">
-      <app-icon name="add"></app-icon>
-      Registrar salidas
-    </button>
+  <app-header headerTitle="Entradas">
+    <ng-template appHeaderAction *ngFor="let action of actions">
+      <ng-container *ngTemplateOutlet="action"></ng-container>
+    </ng-template>
 
-    <form appBrowser [formGroup]="form">
-      <app-form-field>
-        <app-label>Documento</app-label>
-        <app-icon name="research" appPrefix></app-icon>
-        <input appInput formControlName="argumento" />
-        <button appSuffix appIconButton type="button">
-          <app-icon name="equalizer"></app-icon>
-        </button>
-      </app-form-field>
-    </form>
+    <ng-template *ngIf="browser" appHeaderBrowser>
+      <ng-container *ngTemplateOutlet="browser"></ng-container>
+    </ng-template>
 
-    <app-checkbox appFilter>Materiales vencidos</app-checkbox>
-
-    <app-dropdown
-      appFilter
-      [defaultValue]="materiales[0]"
-      [data]="materiales"
-    ></app-dropdown>
-
-    <app-dropdown
-      appFilter
-      [defaultValue]="gestiones[0]"
-      [data]="gestiones"
-      [showFilter]="true"
-    ></app-dropdown>
+    <ng-template appHeaderFilter *ngFor="let filter of filters">
+      <ng-container *ngTemplateOutlet="filter"></ng-container>
+    </ng-template>
   </app-header>
 
   <app-tab>
@@ -50,5 +19,5 @@
     <app-tab-item path="/salidas/comprobantes">Comprobantes</app-tab-item>
   </app-tab>
 
-  <router-outlet class="hidden"></router-outlet>
+  <router-outlet class="hidden" (activate)="onActivate($event)"></router-outlet>
 </div>
