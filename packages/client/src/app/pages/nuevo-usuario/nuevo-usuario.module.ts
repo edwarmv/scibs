@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NuevaCuentaComponent } from './nueva-cuenta.component';
+import { NuevoUsuarioComponent } from './nuevo-usuario.component';
 import { RouterModule, Routes } from '@angular/router';
 import { FormFieldModule } from '@ui/form-field/form-field.module';
 import { IconModule } from '@ui/icon/icon.module';
@@ -8,10 +8,10 @@ import { ButtonModule } from '@ui/button/button.module';
 import { InputModule } from '@ui/input/input.module';
 import { ReactiveFormsModule } from '@angular/forms';
 
-export const routes: Routes = [{ path: '', component: NuevaCuentaComponent }];
+export const routes: Routes = [{ path: '', component: NuevoUsuarioComponent }];
 
 @NgModule({
-  declarations: [NuevaCuentaComponent],
+  declarations: [NuevoUsuarioComponent],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
@@ -22,4 +22,4 @@ export const routes: Routes = [{ path: '', component: NuevaCuentaComponent }];
     InputModule,
   ],
 })
-export class NuevaCuentaModule {}
+export class NuevoUsuarioModule {}

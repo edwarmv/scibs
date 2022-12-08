@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "reports"
+version = "0.1.0"
+description = ""
+authors = ["Edwar Martinez Vale <edwar_kenedy@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+sqlalchemy = "^1.4.44"
+openpyxl = "^3.0.10"
+websockets = "^10.4"
+
+[tool.pyright]
+venvPath = "./"
+venv = ".venv"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

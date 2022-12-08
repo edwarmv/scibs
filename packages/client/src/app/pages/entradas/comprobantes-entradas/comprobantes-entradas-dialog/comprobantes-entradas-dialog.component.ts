@@ -2,7 +2,7 @@ import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { getGestionLabel } from '@helpers/get-gestion-label.helper';
-import { inputDateIsoFormat } from '@helpers/input-date-iso-format.helper';
+import { formatISODateInputDate } from '@helpers/format-iso-date-input-date.helper';
 import { AutocompleteDataSourceCb } from '@ui/form-field/autocomplete.data-source';
 import { format } from 'date-fns';
 import { map, Subject, takeUntil } from 'rxjs';
@@ -164,7 +164,7 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
       } = this.data;
       this.comprobanteEntradasForm.patchValue({
         documento,
-        fechaEntrada: inputDateIsoFormat(fechaEntrada),
+        fechaEntrada: formatISODateInputDate(fechaEntrada),
         saldoInicial,
         gestion: {
           id: gestion.id,

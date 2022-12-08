@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SnackBarService } from '@ui/snack-bar/snack-bar.service';
-import { catchError, Observable, take, tap, throwError } from 'rxjs';
+import { catchError, Observable, Subject, take, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Solicitante } from '../models/solicitante.model';
 
@@ -9,6 +9,9 @@ import { Solicitante } from '../models/solicitante.model';
   providedIn: 'root',
 })
 export class SolicitantesService {
+  private totalSubject = new Subject<number>();
+  total$ = this.totalSubject.asObservable();
+
   apiEndpoint = `${environment.apiEndpoint}/solicitantes`;
 
   constructor(
@@ -21,12 +24,12 @@ export class SolicitantesService {
     take: number;
     term?: string;
   }): Observable<{ values: Solicitante[]; total: number }> {
-    return this.http.get<{ values: Solicitante[]; total: number }>(
-      this.apiEndpoint,
-      {
+    return this.http
+      .get<{ values: Solicitante[]; total: number }>(this.apiEndpoint, {
         params: params,
-      }
-    );
+      })
+
+      .pipe(tap(({ total }) => this.totalSubject.next(total)));
   }
 
   create(body: {

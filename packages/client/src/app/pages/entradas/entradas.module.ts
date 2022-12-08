@@ -28,14 +28,17 @@ const routes: Routes = [
       {
         path: '',
         component: EntradasComponent,
+        title: 'Entradas',
       },
       {
         path: 'proveedores',
         component: ProveedoresComponent,
+        title: 'Proveedores',
       },
       {
         path: 'comprobantes',
         component: ComprobantesEntradasComponent,
+        title: 'Comprobantes de entradas',
       },
     ],
   },

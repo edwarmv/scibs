@@ -26,13 +26,9 @@ export class LoginComponent implements OnInit {
     password: ['qwerasdf', Validators.required],
   });
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-  ) {}
+  constructor(private fb: FormBuilder, private authService: AuthService) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   onSubmit(): void {
     if (this.loginForm.valid) {

@@ -1,50 +1,137 @@
 <div class="main-content-wrap">
   <app-header headerTitle="Saldos">
-    <div action class="caption flex gap-4">
-      <div>
-        Stock mínimo: 200
-      </div>
-
-      <div class="flex gap-[10px]">
-        <div class="flex flex-col items-end">
-          <div>Saldo total:</div>
-          <div>Saldo total valorado (Bs.):</div>
-        </div>
-
+    <ng-template appHeaderAction>
+      <div class="caption flex gap-4">
         <div>
-          <div>1520</div>
-          <div>48640</div>
+          Stock mínimo:
+          {{ selectedMaterial ? selectedMaterial.stockMinimo : 0 }}
+        </div>
+
+        <div class="flex gap-[10px]">
+          <div class="flex flex-col items-end">
+            <div>Saldo total:</div>
+            <div>Saldo total valorado (Bs.):</div>
+          </div>
+
+          <div>
+            <div>{{ stockMaterial }}</div>
+            <div>
+              {{
+                selectedMaterial
+                  ? calcValorTotal(stockMaterial, selectedMaterial.stockMinimo)
+                  : 0
+              }}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </ng-template>
 
-    <form appBrowser [formGroup]="form">
-      <app-form-field>
-        <app-label>Documento</app-label>
+    <ng-template appHeaderBrowser>
+      <app-form-field class="w-[350px]">
+        <app-label>Fecha de entrada / Proveedor / Documento</app-label>
         <app-icon name="research" appPrefix></app-icon>
-        <input appInput formControlName="argumento" />
-        <button appSuffix appIconButton type="button">
-          <app-icon name="equalizer"></app-icon>
-        </button>
+        <input
+          appInput
+          [(ngModel)]="term"
+          (ngModelChange)="termSubject.next($event)"
+        />
       </app-form-field>
-    </form>
+    </ng-template>
 
-    <app-checkbox appFilter>Saldos nulos</app-checkbox>
+    <ng-template appHeaderFilter>
+      <app-checkbox
+        [(ngModel)]="saldosNulos"
+        (ngModelChange)="onSaldosNulosChange()"
+      >
+        Saldos nulos
+      </app-checkbox>
+    </ng-template>
 
-    <app-checkbox appFilter>Saldos iniciales</app-checkbox>
+    <ng-template appHeaderFilter>
+      <app-checkbox
+        [(ngModel)]="saldosIniciales"
+        (ngModelChange)="onSaldosInicialesChange()"
+      >
+        Saldos iniciales
+      </app-checkbox>
+    </ng-template>
 
-    <app-dropdown
-      appFilter
-      [defaultValue]="materiales[0]"
-      [data]="materiales"
-    ></app-dropdown>
+    <ng-template appHeaderFilter>
+      <app-dropdown
+        [dataCb]="materialesDropdownCb"
+        [showFilter]="true"
+        filterPlaceholder="Nombre"
+        [showClearSelectionBtn]="true"
+        emptyValueLabel="Material"
+        (valueChange)="onMaterialChange($event)"
+      ></app-dropdown>
+    </ng-template>
 
-    <app-dropdown
-      appFilter
-      [defaultValue]="gestiones[0]"
-      [data]="gestiones"
-      [showFilter]="true"
-    ></app-dropdown>
+    <ng-template appHeaderFilter>
+      <app-dropdown
+        [dataCb]="gestionesDropdownCb"
+        [showFilter]="true"
+        filterPlaceholder="Fecha"
+        [showClearSelectionBtn]="true"
+        emptyValueLabel="Gestión"
+        (valueChange)="onGestionChange($event)"
+      ></app-dropdown>
+    </ng-template>
   </app-header>
 
+  <app-table [fetchDataCb]="fetchDataCb" [columns]="columns"></app-table>
+
+  <ng-template #fechaEntradaColumn let-stockMaterial="element">
+    <app-cell>
+      {{ stockMaterial.fechaEntrada | date: 'd/M/yyyy' }}
+    </app-cell>
+  </ng-template>
+
+  <ng-template #proveedorColumn let-stockMaterial="element">
+    <app-cell>
+      {{ stockMaterial.nombreProveedor | titlecase }}
+    </app-cell>
+  </ng-template>
+
+  <ng-template #documentoColumn let-stockMaterial="element">
+    <app-cell>
+      {{ stockMaterial.documentoComprobanteEntradas }}
+    </app-cell>
+  </ng-template>
+
+  <ng-template #materialColumn let-stockMaterial="element">
+    <app-cell>
+      {{ stockMaterial.nombreMaterial | titlecase }}
+    </app-cell>
+  </ng-template>
+
+  <ng-template #cantidadColumn let-stockMaterial="element">
+    <app-cell>
+      {{ stockMaterial.cantidadEntrada }}
+    </app-cell>
+  </ng-template>
+
+  <ng-template #precioUnitarioColumn let-stockMaterial="element">
+    <app-cell>
+      {{ stockMaterial.precioUnitarioEntrada | currency }}
+    </app-cell>
+  </ng-template>
+
+  <ng-template #saldoColumn let-stockMaterial="element">
+    <app-cell>
+      {{ stockMaterial.stock }}
+    </app-cell>
+  </ng-template>
+
+  <ng-template #valorTotalColumn let-stockMaterial="element">
+    <app-cell>
+      {{
+        calcValorTotal(
+          stockMaterial.cantidadEntrada,
+          stockMaterial.precioUnitarioEntrada
+        ) | currency
+      }}
+    </app-cell>
+  </ng-template>
 </div>

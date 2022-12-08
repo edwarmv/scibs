@@ -1,5 +1,5 @@
 <div class="main-content-wrap">
-  <app-header headerTitle="Entradas">
+  <app-header headerTitle="Salidas">
     <ng-template appHeaderAction *ngFor="let action of actions">
       <ng-container *ngTemplateOutlet="action"></ng-container>
     </ng-template>
@@ -14,9 +14,23 @@
   </app-header>
 
   <app-tab>
-    <app-tab-item path="/salidas">Salidas</app-tab-item>
-    <app-tab-item path="/salidas/solicitantes">Solicitantes</app-tab-item>
-    <app-tab-item path="/salidas/comprobantes">Comprobantes</app-tab-item>
+    <app-tab-item [showCounter]="true" [count]="totalSalidas" path="/salidas">
+      Salidas
+    </app-tab-item>
+    <app-tab-item
+      [showCounter]="true"
+      [count]="totalSolicitantes"
+      path="/salidas/solicitantes"
+    >
+      Solicitantes
+    </app-tab-item>
+    <app-tab-item
+      [showCounter]="true"
+      [count]="totalComprobantes"
+      path="/salidas/comprobantes"
+    >
+      Comprobantes
+    </app-tab-item>
   </app-tab>
 
   <router-outlet class="hidden" (activate)="onActivate($event)"></router-outlet>

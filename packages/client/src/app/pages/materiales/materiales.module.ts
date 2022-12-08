@@ -27,14 +27,17 @@ const routes: Routes = [
       {
         path: '',
         component: MaterialesComponent,
+        title: 'Materiales',
       },
       {
         path: 'unidades-manejo',
         component: UnidadesManejoComponent,
+        title: 'Unidades de manejo',
       },
       {
         path: 'partidas',
         component: PartidasComponent,
+        title: 'Partidas',
       },
     ],
   },

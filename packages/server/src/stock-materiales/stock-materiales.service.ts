@@ -12,14 +12,56 @@ export class StockMaterialesService {
   ) {}
 
   async findAll({
-    idMaterial,
+    skip = 0,
+    take = 5,
+    term = '',
+    idGestion = '',
+    idMaterial = '',
+    saldosNulos = '',
+    saldosIniciales = '',
   }: {
-    idMaterial?: number;
-  } = {}): Promise<StockMaterial[]> {
-    if (idMaterial) {
-      return this.stockMaterialRepository.find({ where: { idMaterial } });
+    skip: number;
+    take: number;
+    term: string;
+    idGestion: string;
+    idMaterial: string;
+    saldosNulos: string;
+    saldosIniciales: string;
+  }): Promise<{ values: StockMaterial[]; total: number }> {
+    const filters: string[] = [];
+
+    if (idGestion) {
+      filters.push('stockMaterial.idGestion = :idGestion');
     }
-    return this.stockMaterialRepository.find();
+
+    if (idMaterial) {
+      filters.push('stockMaterial.idMaterial = :idMaterial');
+    }
+
+    if (saldosNulos === 'true') {
+      filters.push('stockMaterial.stock = 0');
+    }
+
+    if (saldosIniciales === 'true') {
+      filters.push('stockMaterial.saldoInicial = 1');
+    }
+
+    const [values, total] = await this.stockMaterialRepository
+      .createQueryBuilder('stockMaterial')
+      .skip(skip)
+      .take(take)
+      .where(
+        `(STRFTIME('%d/%m/%Y', stockMaterial.fechaEntrada) LIKE :term OR stockMaterial.nombreProveedor LIKE :term OR stockMaterial.documentoComprobanteEntradas LIKE :term)${
+          filters.length > 0 ? ' AND ' + '(' + filters.join(' AND ') + ')' : ''
+        }`,
+        {
+          idGestion,
+          idMaterial,
+          term: `%${term}%`,
+        }
+      )
+      .getManyAndCount();
+    return { values, total };
   }
 
   async findOne(idMaterial: number): Promise<StockMaterial> {
@@ -30,7 +72,8 @@ export class StockMaterialesService {
     const { stock }: { stock: number } = await this.stockMaterialRepository
       .createQueryBuilder('stockMaterial')
       .select('SUM(stockMaterial.stock)', 'stock')
-      .where('stockMaterial.idMaterial = :idMaterial', { idMaterial })
+      .where('stockMaterial.stock > 0')
+      .andWhere('stockMaterial.idMaterial = :idMaterial', { idMaterial })
       .getRawOne();
     return Number(stock);
   }
@@ -54,6 +97,8 @@ WITH
     FROM
       stock_materiales sm2
     WHERE
+      sm2.stock > 0
+      AND
       sm2.idMaterial = ${_idMaterial}
   )
 SELECT

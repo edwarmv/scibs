@@ -8,6 +8,7 @@ const routes: Routes = [
     path: 'login',
     loadChildren: () =>
       import('@pages/login/login.module').then((m) => m.LoginModule),
+    title: 'Inicio de sesión',
     canActivate: [LoginGuard],
   },
   {
@@ -16,14 +17,16 @@ const routes: Routes = [
       import('@pages/cambiar-password/cambiar-password.module').then(
         (m) => m.CambiarPasswordModule
       ),
+    title: 'Cambio de contraseña',
     canActivate: [LoginGuard],
   },
   {
     path: 'nueva-cuenta',
     loadChildren: () =>
-      import('@pages/nueva-cuenta/nueva-cuenta.module').then(
-        (m) => m.NuevaCuentaModule
+      import('@pages/nuevo-usuario/nuevo-usuario.module').then(
+        (m) => m.NuevoUsuarioModule
       ),
+    title: 'Nuevo usuario',
     canActivate: [LoginGuard],
   },
   {
@@ -48,6 +51,7 @@ const routes: Routes = [
     path: 'saldos',
     loadChildren: () =>
       import('@pages/saldos/saldos.module').then((m) => m.SaldosModule),
+    title: 'Saldos',
     data: {
       showSidebar: true,
     },
@@ -70,6 +74,7 @@ const routes: Routes = [
       import('@pages/gestiones/gestiones.module').then(
         (m) => m.GestionesModule
       ),
+    title: 'Gestiones',
     data: {
       showSidebar: true,
     },
@@ -79,6 +84,7 @@ const routes: Routes = [
     path: 'reportes',
     loadChildren: () =>
       import('@pages/reportes/reportes.module').then((m) => m.ReportesModule),
+    title: 'Reportes',
     data: {
       showSidebar: true,
     },
@@ -90,6 +96,7 @@ const routes: Routes = [
       import('@pages/copias-seguridad/copias-seguridad.module').then(
         (m) => m.CopiasSeguridadModule
       ),
+    title: 'Copias de seguridad',
     data: {
       showSidebar: true,
     },

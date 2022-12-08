@@ -18,7 +18,13 @@
       </span>
 
       <button appIconButton (click)="sidebarService.toggle()">
-        <app-icon name="left-alignment"></app-icon>
+        <app-icon
+          *ngIf="sidebarService.collapsed; else leftAlignment"
+          name="right-alignment"
+        ></app-icon>
+        <ng-template #leftAlignment>
+          <app-icon name="left-alignment"></app-icon>
+        </ng-template>
       </button>
     </div>
 

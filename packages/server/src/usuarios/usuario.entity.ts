@@ -23,9 +23,6 @@ export class Usuario {
   @Column({ select: false })
   salt: string;
 
-  @Column({ default: false, name: 'password_cambiado' })
-  passwordCambiado: boolean;
-
   @OneToMany(
     () => ComprobanteSalidas,
     (comprobanteSalidas) => comprobanteSalidas.usuario

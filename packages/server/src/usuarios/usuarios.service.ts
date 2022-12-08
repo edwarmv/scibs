@@ -72,7 +72,6 @@ export class UsuariosService {
         'username',
         'key',
         'salt',
-        'passwordCambiado',
       ],
     });
   }

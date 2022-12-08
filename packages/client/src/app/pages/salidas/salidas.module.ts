@@ -27,14 +27,17 @@ const routes: Routes = [
       {
         path: '',
         component: SalidasComponent,
+        title: 'Salidas',
       },
       {
         path: 'solicitantes',
         component: SolicitantesComponent,
+        title: 'Solicitantes',
       },
       {
         path: 'comprobantes',
         component: ComprobantesSalidasComponent,
+        title: 'Comprobantes de salidas',
       },
     ],
   },

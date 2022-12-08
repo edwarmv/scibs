@@ -2,7 +2,7 @@ import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { Component, Inject } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { getGestionLabel } from '@helpers/get-gestion-label.helper';
-import { inputDateIsoFormat } from '@helpers/input-date-iso-format.helper';
+import { formatISODateInputDate } from '@helpers/format-iso-date-input-date.helper';
 import { AutocompleteDataSourceCb } from '@ui/form-field/autocomplete.data-source';
 import { format } from 'date-fns';
 import { map, Subject, takeUntil } from 'rxjs';
@@ -24,6 +24,7 @@ import { ArrayMinValidator } from 'src/app/validators/array-min.validator';
 import { StockMaterialValidator } from 'src/app/validators/stock-material.validator';
 import { NumberGreaterThanValidator } from 'src/app/validators/number-greater-than.validator';
 import { titleCase } from 'title-case';
+import { formatInputDateIsoDate } from '@helpers/format-input-date-iso-date.helper';
 
 type SalidasFormArrayGroup = FormGroup<{
   id: FormControl<number | null>;
@@ -164,7 +165,7 @@ export class ComprobantesSalidasDialogComponent {
         this.data;
       this.comprobanteSalidasForm.patchValue({
         documento,
-        fechaSalida: inputDateIsoFormat(fechaSalida),
+        fechaSalida: formatISODateInputDate(fechaSalida),
         vencido,
         gestion: {
           id: gestion.id,
@@ -205,16 +206,12 @@ export class ComprobantesSalidasDialogComponent {
   }
 
   onSubmit() {
-    console.log(this.comprobanteSalidasForm);
-    /* if (this.comprobanteSalidasForm.valid) {
+    if (this.comprobanteSalidasForm.valid) {
       const value = this.comprobanteSalidasForm
         .value as CreateComprobanteSalidasDto;
 
-      const fechaSalida = new Date(
-        value.fechaSalida + 'T00:00'
-      ).toISOString();
+      const fechaSalida = formatInputDateIsoDate(value.fechaSalida);
 
-      console.log(value);
       if (this.data) {
         this.comprobantesSalidasService
           .update(this.data.id, { ...value, ...{ fechaSalida } })
@@ -228,7 +225,7 @@ export class ComprobantesSalidasDialogComponent {
             this.dialogRef.close(comprobanteEntradas);
           });
       }
-    } */
+    }
   }
 
   addSalida() {

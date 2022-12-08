@@ -2,7 +2,7 @@
   style="width: 478px"
   class="flex flex-col gap-6 default-box-shadow p-16 default-rounded"
 >
-  <p class="headline">Nueva cuenta</p>
+  <p class="headline">Nuevo usuario</p>
 
   <form class="flex flex-col gap-6" [formGroup]="form" (ngSubmit)="onSubmit()">
     <app-form-field>
@@ -82,12 +82,12 @@
     </a>
 
     <button appButton size="md" color="primary" type="submit">
-      Registrar cuenta
+      Registrar usuario
       <app-icon name="right-arrow"></app-icon>
     </button>
   </form>
   <span class="mx-auto">
-    <span class="button-small mr-1">¿Tienes una cuenta?</span>
+    <span class="button-small mr-1">¿Ya estas registrado?</span>
     <a routerLink="/login" class="hyperlink mx-auto">inicia sesión</a>
   </span>
 </div>

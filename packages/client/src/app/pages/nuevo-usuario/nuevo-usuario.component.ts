@@ -18,14 +18,14 @@ type Form = {
 };
 
 @Component({
-  selector: 'app-nueva-cuenta',
-  templateUrl: './nueva-cuenta.component.html',
-  styleUrls: ['./nueva-cuenta.component.scss'],
+  selector: 'app-nuevo-usuario',
+  templateUrl: './nuevo-usuario.component.html',
+  styleUrls: ['./nuevo-usuario.component.scss'],
   host: {
     class: 'flex flex-col items-center justify-center h-full',
   },
 })
-export class NuevaCuentaComponent implements OnInit {
+export class NuevoUsuarioComponent implements OnInit {
   form: FormGroup<Form> = this.fb.nonNullable.group(
     {
       nombre: ['', Validators.required],
