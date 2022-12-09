@@ -39,21 +39,33 @@
 </ng-template>
 
 <ng-template #verMaterialAction>
-  <button appButtonOutline>
+  <button
+    appButtonOutline
+    [disabled]="this.selectedMaterial === null"
+    (click)="verMaterial()"
+  >
     <app-icon name="cube"></app-icon>
     Ver material
   </button>
 </ng-template>
 
 <ng-template #verEntradasAction>
-  <button appButtonOutline>
-    <app-icon name="turn-down-right"></app-icon>
+  <button
+    appButtonOutline
+    [disabled]="this.selectedMaterial === null"
+    (click)="verEntradas()"
+  >
+    <app-icon name="turn-down-left"></app-icon>
     Ver entradas
   </button>
 </ng-template>
 
 <ng-template #verSaldosAction>
-  <button appButtonOutline>
+  <button
+    appButtonOutline
+    [disabled]="this.selectedMaterial === null"
+    (click)="verSaldos()"
+  >
     <app-icon name="balance"></app-icon>
     Ver saldos
   </button>
@@ -84,10 +96,7 @@
 </ng-template>
 
 <ng-template #materialesVencidosFilter>
-  <app-checkbox
-    [(ngModel)]="vencido"
-    (ngModelChange)="onVencidoChange()"
-  >
+  <app-checkbox [(ngModel)]="vencido" (ngModelChange)="onVencidoChange()">
     Materiales vencidos
   </app-checkbox>
 </ng-template>
@@ -96,6 +105,7 @@
   <app-dropdown
     [dataCb]="materialesDropdownCb"
     [showFilter]="true"
+    [defaultValue]="defaultMaterial"
     filterPlaceholder="Nombre"
     [showClearSelectionBtn]="true"
     emptyValueLabel="Material"

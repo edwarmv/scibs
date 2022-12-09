@@ -93,6 +93,11 @@ export class MaterialesComponent implements OnInit {
     this.term$.subscribe(() => {
       this.fetchData();
     });
+
+    const { material }: { material: Material } = window.history.state;
+    if (material) {
+      this.term = material.nombre;
+    }
   }
 
   registrarMaterial() {
@@ -126,9 +131,7 @@ export class MaterialesComponent implements OnInit {
     this.confirmDialogService
       .open({
         title: 'Eliminar material',
-        message: `¿Desea eliminar el material: ${titleCase(
-          value.nombre
-        )}?`,
+        message: `¿Desea eliminar el material: ${titleCase(value.nombre)}?`,
       })
       .closed.subscribe((confirm) => {
         if (confirm) {

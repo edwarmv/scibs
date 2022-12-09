@@ -50,21 +50,33 @@
 </ng-template>
 
 <ng-template #verMaterialAction>
-  <button appButtonOutline>
+  <button
+    [disabled]="this.selectedMaterial === null"
+    appButtonOutline
+    (click)="verMaterial()"
+  >
     <app-icon name="cube"></app-icon>
     Ver material
   </button>
 </ng-template>
 
 <ng-template #verSalidasAction>
-  <button appButtonOutline>
+  <button
+    appButtonOutline
+    [disabled]="this.selectedMaterial === null"
+    (click)="verSalidas()"
+  >
     <app-icon name="turn-down-right"></app-icon>
     Ver salidas
   </button>
 </ng-template>
 
 <ng-template #verSaldosAction>
-  <button appButtonOutline>
+  <button
+    appButtonOutline
+    [disabled]="this.selectedMaterial === null"
+    (click)="verSaldos()"
+  >
     <app-icon name="balance"></app-icon>
     Ver saldos
   </button>
@@ -108,6 +120,7 @@
     [dataCb]="materialesDropdownCb"
     [showFilter]="true"
     filterPlaceholder="Nombre"
+    [defaultValue]="defaultMaterial"
     [showClearSelectionBtn]="true"
     emptyValueLabel="Material"
     (valueChange)="onMaterialChange($event)"

@@ -6,7 +6,9 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { getGestionLabel } from '@helpers/get-gestion-label.helper';
+import { DropdownItem } from '@ui/dropdown/dropdown-item/dropdown-item.component';
 import { DropdownDataCb } from '@ui/dropdown/dropdown.component';
 import { Column } from '@ui/table/table.component';
 import { TableDataSourceCb } from '@ui/table/table.data-source';
@@ -71,6 +73,8 @@ export class SalidasComponent implements OnInit, OnDestroy {
   materialesDropdownCb: DropdownDataCb<Material>;
   selectedMaterial: Material | null = null;
 
+  defaultMaterial: DropdownItem<Material> | null = null;
+
   gestionesDropdownCb: DropdownDataCb<Gestion>;
   selectedGestion: Gestion | null = null;
 
@@ -78,7 +82,8 @@ export class SalidasComponent implements OnInit, OnDestroy {
     private salidasService: SalidasService,
     private materialesService: MaterialesService,
     private gestionesService: GestionesService,
-    private dialog: Dialog
+    private dialog: Dialog,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -118,6 +123,14 @@ export class SalidasComponent implements OnInit, OnDestroy {
           total,
         }))
       );
+
+    const { material }: { material: Material } = window.history.state;
+    if (material) {
+      this.defaultMaterial = {
+        label: titleCase(material.nombre),
+        value: material,
+      };
+    }
   }
 
   openComprobantesSalidasDialog() {
@@ -165,6 +178,30 @@ export class SalidasComponent implements OnInit, OnDestroy {
 
   fetchData() {
     this.fetchDataCb = this._fetchData();
+  }
+
+  verMaterial() {
+    if (this.selectedMaterial) {
+      this.router.navigate(['/materiales'], {
+        state: { material: this.selectedMaterial },
+      });
+    }
+  }
+
+  verEntradas() {
+    if (this.selectedMaterial) {
+      this.router.navigate(['/entradas'], {
+        state: { material: this.selectedMaterial },
+      });
+    }
+  }
+
+  verSaldos() {
+    if (this.selectedMaterial) {
+      this.router.navigate(['/saldos'], {
+        state: { material: this.selectedMaterial },
+      });
+    }
   }
 
   ngOnDestroy(): void {

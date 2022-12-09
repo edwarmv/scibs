@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   OnDestroy,
   OnInit,
@@ -6,6 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { getGestionLabel } from '@helpers/get-gestion-label.helper';
+import { DropdownItem } from '@ui/dropdown/dropdown-item/dropdown-item.component';
 import { DropdownDataCb } from '@ui/dropdown/dropdown.component';
 import { Column } from '@ui/table/table.component';
 import { TableDataSourceCb } from '@ui/table/table.data-source';
@@ -60,13 +62,16 @@ export class SaldosComponent implements OnInit, OnDestroy {
   selectedMaterial: Material | null = null;
   stockMaterial = 0;
 
+  defaultMaterial: DropdownItem<Material> | null = null;
+
   gestionesDropdownCb: DropdownDataCb<Gestion>;
   selectedGestion: Gestion | null = null;
 
   constructor(
     private stockMaterialesService: StockMaterialesService,
     private materialesService: MaterialesService,
-    private gestionesService: GestionesService
+    private gestionesService: GestionesService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -109,6 +114,15 @@ export class SaldosComponent implements OnInit, OnDestroy {
           total,
         }))
       );
+
+    const { material }: { material: Material } = window.history.state;
+    if (material) {
+      this.defaultMaterial = {
+        label: titleCase(material.nombre),
+        value: material,
+      };
+      this.cd.detectChanges();
+    }
   }
 
   calcValorTotal(cantidad: number, precioUnitario: number): number {

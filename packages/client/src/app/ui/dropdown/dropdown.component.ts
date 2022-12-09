@@ -46,7 +46,16 @@ export class DropdownComponent<T> implements OnInit, OnDestroy {
   dataSource: DropdownDataSource<T>;
 
   @Input()
-  defaultValue: DropdownItem<T> | null;
+  set defaultValue(value: DropdownItem<T> | null) {
+    this._defaultValue = value;
+    if (value) {
+      this.valueChange.emit(value.value);
+    }
+  }
+  get defaultValue() {
+    return this._defaultValue;
+  }
+  private _defaultValue: DropdownItem<T> | null;
 
   @Output()
   valueChange = new EventEmitter<T | null>();
@@ -121,7 +130,7 @@ export class DropdownComponent<T> implements OnInit, OnDestroy {
     this.dropdownService.selectedItem$
       .pipe(takeUntil(this.ngUnsubscribe$))
       .subscribe((value) => {
-        this.defaultValue = value;
+        this._defaultValue = value;
         this.showDropdownMenu = false;
         this.valueChange.emit(value.value);
         if (this.dataCb && this.showFilter) {
@@ -131,7 +140,7 @@ export class DropdownComponent<T> implements OnInit, OnDestroy {
   }
 
   clearSelection() {
-    this.defaultValue = null;
+    this._defaultValue = null;
     this.valueChange.emit(null);
   }
 
