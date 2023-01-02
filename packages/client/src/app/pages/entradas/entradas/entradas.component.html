@@ -1,4 +1,8 @@
-<app-table [fetchDataCb]="fetchDataCb" [columns]="columns"></app-table>
+<app-table
+  [fetchDataCb]="fetchDataCb"
+  [columns]="columns"
+  (onDblClickRow)="openComprobantesEntradasDialog($event)"
+></app-table>
 
 <ng-template #materialColumn let-entrada="element">
   <app-cell>
@@ -14,13 +18,13 @@
 
 <ng-template #proveedorColumn let-entrada="element">
   <app-cell>
-    {{ entrada.comprobanteEntradas.proveedor.nombre | titlecase }}
+    {{ entrada.comprobanteEntradas | nombreProveedor }}
   </app-cell>
 </ng-template>
 
 <ng-template #documentoColumn let-entrada="element">
   <app-cell>
-    {{ entrada.comprobanteEntradas.documento }}
+    {{ entrada.comprobanteEntradas | documentoComprobateEntrada }}
   </app-cell>
 </ng-template>
 
@@ -43,7 +47,7 @@
 </ng-template>
 
 <ng-template #cargarSaldosAction>
-  <button appButtonOutline>
+  <button appButtonOutline (click)="openCargarSaldosDialog()">
     <app-icon name="cargar-saldo"></app-icon>
     Cargar saldos
   </button>
@@ -112,6 +116,15 @@
     (ngModelChange)="onSaldoInicialChange()"
   >
     Saldos iniciales
+  </app-checkbox>
+</ng-template>
+
+<ng-template #saldosGestionAnteriorFilter>
+  <app-checkbox
+    [(ngModel)]="saldoGestionAnterior"
+    (ngModelChange)="onSaldoGestionAnteriorChange()"
+  >
+    Saldos gestión anterior
   </app-checkbox>
 </ng-template>
 

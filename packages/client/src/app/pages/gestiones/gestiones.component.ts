@@ -28,6 +28,8 @@ export class GestionesComponent implements OnInit {
   termSubject = new Subject<string>();
   term$ = this.termSubject.asObservable().pipe(debounceTime(300));
 
+  gestionesAperturadas = false;
+
   constructor(
     private gestionesService: GestionesService,
     private dialog: Dialog,
@@ -73,11 +75,16 @@ export class GestionesComponent implements OnInit {
   onBsRow(value: Gestion) {
     this.confirmDialogService
       .open({
-        title: 'Eliminar material',
-        message: `¿Desea eliminar la gestion: ${format(
+        title: 'Eliminar gestión',
+        message: `¿Desea eliminar la gestión: ${format(
           new Date(value.fechaApertura),
           "dd 'de' MMMM 'de' yyyy"
-        )}${value.fechaCierre ? ' -' + value.fechaCierre : ''}?`,
+        )}${
+          value.fechaCierre
+            ? ' - ' +
+              format(new Date(value.fechaCierre), "dd 'de' MMMM 'de' yyyy")
+            : ''
+        }?`,
       })
       .closed.subscribe((confirm) => {
         if (confirm) {
@@ -88,12 +95,17 @@ export class GestionesComponent implements OnInit {
       });
   }
 
+  onGestionesAperturadasChange() {
+    this.fetchData();
+  }
+
   private _fetchData(): TableDataSourceCb<Gestion> {
     return ({ skip, take }) =>
       this.gestionesService.findAll({
         skip,
         take,
         term: this.term,
+        gestionesAperturadas: this.gestionesAperturadas,
       });
   }
 

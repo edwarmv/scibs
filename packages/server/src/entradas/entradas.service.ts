@@ -17,6 +17,7 @@ export class EntradasService {
     gestionId = '',
     materialId = '',
     saldoInicial = '',
+    saldoGestionAnterior = '',
   }: {
     skip: number;
     take: number;
@@ -25,6 +26,7 @@ export class EntradasService {
     gestionId: string;
     materialId: string;
     saldoInicial: string;
+    saldoGestionAnterior: string;
   }): Promise<{ values: Entrada[]; total: number }> {
     saldoInicial = saldoInicial === 'true' ? '1' : '';
     const filters: string[] = [];
@@ -40,6 +42,9 @@ export class EntradasService {
     if (saldoInicial) {
       filters.push('comprobanteEntradas.saldoInicial = 1');
     }
+    if (saldoGestionAnterior === 'true') {
+      filters.push('comprobanteEntradas.saldoGestionAnterior = 1');
+    }
     const [values, total] = await this.entradaRepository
       .createQueryBuilder('entrada')
       .leftJoinAndSelect('entrada.material', 'material')
@@ -50,13 +55,18 @@ export class EntradasService {
       .skip(skip)
       .take(take)
       .where(
-        `(STRFTIME('%d/%m/%Y', comprobanteEntradas.fechaEntrada) LIKE :term OR proveedor.nombre LIKE :term OR comprobanteEntradas.documento LIKE :term)${
-          filters.length > 0 ? ' AND ' : ''
-        }${filters.length > 0 ? '(' + filters.join(' AND ') + ')' : ''}`,
+        `(
+          STRFTIME('%d/%m/%Y', comprobanteEntradas.fechaEntrada) LIKE :term
+            OR
+          proveedor.nombre LIKE :term
+            OR
+          COALESCE(comprobanteEntradas.documento, '000-' || comprobanteEntradas.id) LIKE :term)${
+            filters.length > 0 ? ' AND ' : ''
+          }${filters.length > 0 ? '(' + filters.join(' AND ') + ')' : ''}`,
         { proveedorId, gestionId, materialId, saldoInicial, term: `%${term}%` }
       )
-      .orderBy('comprobanteEntradas.fechaEntrada', 'ASC')
-      .addOrderBy('ordenOperacion.orden', 'ASC')
+      .orderBy('comprobanteEntradas.fechaEntrada', 'DESC')
+      .addOrderBy('ordenOperacion.orden', 'DESC')
       .getManyAndCount();
     return { values, total };
   }
@@ -76,5 +86,9 @@ export class EntradasService {
       )[0]
     );
     return stockOfMaterial;
+  }
+
+  async remove(idEntrada: number): Promise<void> {
+    await this.entradaRepository.delete(idEntrada);
   }
 }

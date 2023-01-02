@@ -1,0 +1,54 @@
+<div class="default-dialog-content">
+  <app-dialog-title>Cargar saldos</app-dialog-title>
+
+  <app-dialog-content>
+    <form
+      class="flex flex-col gap-4"
+      [formGroup]="cargarSaldosForm"
+      (ngSubmit)="cargarSaldos()"
+    >
+      <ng-container formGroupName="from">
+        <app-form-field
+          class="grow"
+          [autocompleteDataCb]="gestionesAutocompleteCb"
+          (autocompleteValueChange)="onFromChange($event)"
+        >
+          <app-label>De</app-label>
+          <input appInput formControlName="label" />
+          <app-error *ngIf="from?.get('id')?.hasError('required')">
+            Campo requerido
+          </app-error>
+        </app-form-field>
+      </ng-container>
+
+      <ng-container formGroupName="to">
+        <app-form-field
+          class="grow"
+          [autocompleteDataCb]="gestionesAutocompleteCb"
+          (autocompleteValueChange)="onToChange($event)"
+        >
+          <app-label>A</app-label>
+          <input appInput formControlName="label" />
+          <app-error *ngIf="to?.get('id')?.hasError('required')">
+            Campo requerido
+          </app-error>
+        </app-form-field>
+      </ng-container>
+
+      <app-form-field>
+        <app-label>Fecha de entrada</app-label>
+        <input appInput type="date" formControlName="fechaEntrada" />
+        <app-error *ngIf="fechaEntrada?.hasError('required')">
+          Campo requerido
+        </app-error>
+      </app-form-field>
+    </form>
+  </app-dialog-content>
+
+  <app-dialog-actions>
+    <button appButton color="secondary">Cancelar</button>
+    <button appButton color="primary" (click)="cargarSaldos()">
+      Cargar saldos
+    </button>
+  </app-dialog-actions>
+</div>

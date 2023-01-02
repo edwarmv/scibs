@@ -40,6 +40,7 @@ type ComprobanteEntradasForm = FormGroup<{
   documento: FormControl<string>;
   fechaEntrada: FormControl<string>;
   saldoInicial: FormControl<boolean>;
+  saldoGestionAnterior: FormControl<boolean>;
   gestion: FormGroup<{
     id: FormControl<number | null>;
     label: FormControl<string>;
@@ -64,13 +65,13 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
   gestionesAutocompleteCb: AutocompleteDataSourceCb<Gestion>;
   selectedGestion?: Gestion;
   proveedoresAutocompleteCb: AutocompleteDataSourceCb<Proveedor>;
-  selectedProveedor: Proveedor;
+  selectedProveedor?: Proveedor;
   materialesAutocompleteCb: AutocompleteDataSourceCb<Material>;
 
   focusedRow = false;
 
   constructor(
-    private dialogRef: DialogRef<ComprobanteEntradas>,
+    private dialogRef: DialogRef<boolean>,
     @Inject(DIALOG_DATA) public data: ComprobanteEntradas,
     private gestionesService: GestionesService,
     private proveedoresService: ProveedoresService,
@@ -122,6 +123,7 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
         nonNullable: true,
       }),
       saldoInicial: new FormControl(false, { nonNullable: true }),
+      saldoGestionAnterior: new FormControl(false, { nonNullable: true }),
       gestion: new FormGroup({
         id: new FormControl<number | null>(null, {
           validators: Validators.required,
@@ -153,28 +155,69 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
       ),
     });
 
+    this.saldoInicial?.valueChanges
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((value) => {
+        if (value) {
+          this.documento?.disable();
+          this.proveedor?.disable();
+          this.documento?.setValue(this.data ? `000-${this.data.id}` : '000');
+          this.proveedor?.patchValue({
+            id: 0,
+            nombre: 'Saldo inicial',
+          });
+        } else {
+          if (this.saldoGestionAnterior?.value === false) {
+            this.documento?.reset();
+            this.proveedor?.reset();
+            this.documento?.enable();
+            this.proveedor?.enable();
+          }
+        }
+      });
+
+    this.saldoGestionAnterior?.valueChanges
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((value) => {
+        if (value) {
+          this.documento?.disable();
+          this.proveedor?.disable();
+          this.saldoInicial?.disable();
+          this.documento?.setValue(this.data ? `000-${this.data.id}` : '000');
+          this.proveedor?.patchValue({
+            id: 0,
+            nombre: 'Saldo gestión anterior',
+          });
+        }
+      });
+
     if (this.data) {
       const {
         documento,
         fechaEntrada,
+        saldoGestionAnterior,
         saldoInicial,
         gestion,
         proveedor,
         entradas,
       } = this.data;
       this.comprobanteEntradasForm.patchValue({
-        documento,
         fechaEntrada: formatISODateInputDate(fechaEntrada),
         saldoInicial,
+        saldoGestionAnterior,
         gestion: {
           id: gestion.id,
           label: getGestionLabel(gestion),
         },
-        proveedor: {
+      });
+
+      if (documento) {
+        this.documento?.patchValue(documento);
+        this.proveedor?.patchValue({
           id: proveedor.id,
           nombre: titleCase(proveedor.nombre),
-        },
-      });
+        });
+      }
 
       for (const entrada of entradas) {
         this.entradas.push(this.genEntrada(entrada));
@@ -197,7 +240,10 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
       ?.get('nombre')
       ?.valueChanges.pipe(takeUntil(this.unsubscribe$))
       .subscribe((value) => {
-        if (this.selectedProveedor && this.selectedProveedor.nombre !== value) {
+        if (
+          this.selectedProveedor &&
+          titleCase(this.selectedProveedor.nombre) !== value
+        ) {
           this.proveedor?.get('id')?.reset();
         }
       });
@@ -212,18 +258,23 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
         value.fechaEntrada + 'T00:00'
       ).toISOString();
 
-      console.log(value);
       if (this.data) {
         this.comprobantesEntradasService
-          .update(this.data.id, { ...value, ...{ fechaEntrada } })
-          .subscribe((comprobanteEntradas) => {
-            this.dialogRef.close(comprobanteEntradas);
+          .update(this.data.id, {
+            ...value,
+            ...{
+              fechaEntrada,
+              saldoInicial: value.saldoInicial ? true : false,
+            },
+          })
+          .subscribe(() => {
+            this.dialogRef.close(true);
           });
       } else {
         this.comprobantesEntradasService
           .create({ ...value, ...{ fechaEntrada } })
-          .subscribe((comprobanteEntradas) => {
-            this.dialogRef.close(comprobanteEntradas);
+          .subscribe(() => {
+            this.dialogRef.close(true);
           });
       }
     }
@@ -297,7 +348,7 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
     this.selectedProveedor = proveedor;
     this.proveedor?.patchValue({
       id: proveedor.id,
-      nombre: proveedor.nombre,
+      nombre: titleCase(proveedor.nombre),
     });
   }
 
@@ -324,6 +375,10 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
 
   get fechaEntrada() {
     return this.comprobanteEntradasForm.get('fechaEntrada');
+  }
+
+  get saldoGestionAnterior() {
+    return this.comprobanteEntradasForm.get('saldoGestionAnterior');
   }
 
   get saldoInicial() {

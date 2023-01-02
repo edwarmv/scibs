@@ -20,7 +20,6 @@ import { InputModule } from '@ui/input/input.module';
 import { Column } from '@ui/table/table.component';
 import { TableDataSourceCb } from '@ui/table/table.data-source';
 import { TableModule } from '@ui/table/table.module';
-import Big from 'big.js';
 import { debounceTime, map, Subject, takeUntil } from 'rxjs';
 import { Material } from 'src/app/models/material.model';
 import { Salida } from 'src/app/models/salida.model';

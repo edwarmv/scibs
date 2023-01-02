@@ -1,4 +1,8 @@
-<app-table [fetchDataCb]="fetchDataCb" [columns]="columns"></app-table>
+<app-table
+  [fetchDataCb]="fetchDataCb"
+  (onDblClickRow)="openComprobantesSalidasDialog($event)"
+  [columns]="columns"
+></app-table>
 
 <ng-template #materialColumn let-salida="element">
   <app-cell>
@@ -13,15 +17,24 @@
 </ng-template>
 
 <ng-template #solicitanteColumn let-salida="element">
-  <app-cell>
-    {{ salida.comprobanteSalidas.solicitante.apellido | titlecase }}
-    {{ salida.comprobanteSalidas.solicitante.nombre | titlecase }}
+  <app-cell *ngIf="salida.comprobanteSalidas.vencido; else solicitante">
+    Vencido
   </app-cell>
+  <ng-template #solicitante>
+    <app-cell>
+      {{ salida.comprobanteSalidas.solicitante.apellido | titlecase }}
+      {{ salida.comprobanteSalidas.solicitante.nombre | titlecase }}
+    </app-cell>
+  </ng-template>
 </ng-template>
 
 <ng-template #documentoColumn let-salida="element">
   <app-cell>
-    {{ salida.comprobanteSalidas.documento }}
+    {{
+      salida.comprobanteSalidas.documento
+        ? salida.comprobanteSalidas.documento
+        : '000-' + salida.comprobanteSalidas.id
+    }}
   </app-cell>
 </ng-template>
 

@@ -8,8 +8,17 @@ let nextUniqueId = 0;
 @Directive({
   selector: 'input[appInput]',
   host: {
-    class:
-      'grow text-black focus:outline-none placeholder:opacity-0 placeholder:text-gray-300 font-bold focus:placeholder:opacity-100 placeholder:font-normal placeholder:text-sm',
+    class: `grow
+w-full
+text-black
+focus:outline-none
+placeholder:opacity-0
+placeholder:text-gray-300
+font-bold
+focus:placeholder:opacity-100
+placeholder:font-normal
+placeholder:text-sm
+disabled:bg-white`,
     '[attr.id]': 'id',
     '(focus)': '_focusChanged(true)',
     '(blur)': '_focusChanged(false)',

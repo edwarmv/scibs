@@ -39,13 +39,20 @@ export class ComprobantesSalidasService {
     skip: number;
     take: number;
     term?: string;
-    partidaId?: number;
+    vencido?: boolean;
+    gestionId?: string;
   }): Observable<{ values: ComprobanteSalidas[]; total: number }> {
     return this.http
       .get<{ values: ComprobanteSalidas[]; total: number }>(this.apiEndpoint, {
         params,
       })
       .pipe(tap(({ total }) => this.totalSubject.next(total)));
+  }
+
+  findOne(idComprobanteSalida: number): Observable<ComprobanteSalidas> {
+    return this.http.get<ComprobanteSalidas>(
+      `${this.apiEndpoint}/${idComprobanteSalida}`
+    );
   }
 
   create(body: CreateComprobanteSalidasDto): Observable<ComprobanteSalidas> {

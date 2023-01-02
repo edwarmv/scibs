@@ -56,6 +56,13 @@
       </ng-container>
     </div>
 
+    <div *ngIf="data && data.saldoGestionAnterior">
+      <div class="subheadline">
+        Comprobante saldo gestión anterior:
+        {{ data.comprobanteSaldoGestionAnterior | documentoComprobateEntrada }}
+      </div>
+    </div>
+
     <div class="flex items-center gap-5">
       <div class="flex flex-col">
         <div class="subheadline">
@@ -138,7 +145,7 @@
             </td>
 
             <td class="pr-4 py-3">
-              <app-form-field>
+              <app-form-field class="w-[180px]">
                 <app-label>Precio unitario (Bs.)</app-label>
                 <input
                   type="number"
@@ -157,7 +164,7 @@
             </td>
 
             <td class="pr-4 py-3">
-              <app-form-field>
+              <app-form-field class="w-[150px]">
                 <app-label>Cantidad</app-label>
                 <input
                   (keydown.backspace)="$event.stopPropagation()"

@@ -14,13 +14,9 @@
           </div>
 
           <div>
-            <div>{{ stockMaterial }}</div>
+            <div>{{ stockMaterial.stock }}</div>
             <div>
-              {{
-                selectedMaterial
-                  ? calcValorTotal(stockMaterial, selectedMaterial.stockMinimo)
-                  : 0
-              }}
+              {{ stockMaterial.totalValorado }}
             </div>
           </div>
         </div>
@@ -49,11 +45,26 @@
     </ng-template>
 
     <ng-template appHeaderFilter>
+      <app-checkbox [(ngModel)]="conSaldo" (ngModelChange)="onConSaldoChange()">
+        Con saldo
+      </app-checkbox>
+    </ng-template>
+
+    <ng-template appHeaderFilter>
       <app-checkbox
         [(ngModel)]="saldosIniciales"
         (ngModelChange)="onSaldosInicialesChange()"
       >
         Saldos iniciales
+      </app-checkbox>
+    </ng-template>
+
+    <ng-template appHeaderFilter>
+      <app-checkbox
+        [(ngModel)]="saldosGestionAnterior"
+        (ngModelChange)="onSaldosGestionAnteriorChange()"
+      >
+        Saldos gestión anterior
       </app-checkbox>
     </ng-template>
 
@@ -91,13 +102,23 @@
 
   <ng-template #proveedorColumn let-stockMaterial="element">
     <app-cell>
-      {{ stockMaterial.nombreProveedor | titlecase }}
+      {{
+        stockMaterial.saldoGestionAnterior
+          ? 'Saldo gestión anterior'
+          : stockMaterial.saldoInicial
+          ? 'Saldo inicial'
+          : (stockMaterial.nombreProveedor | titlecase)
+      }}
     </app-cell>
   </ng-template>
 
   <ng-template #documentoColumn let-stockMaterial="element">
     <app-cell>
-      {{ stockMaterial.documentoComprobanteEntradas }}
+      {{
+        stockMaterial.documentoComprobanteEntradas
+          ? stockMaterial.documentoComprobanteEntradas
+          : '000-' + stockMaterial.idComprobanteEntradas
+      }}
     </app-cell>
   </ng-template>
 

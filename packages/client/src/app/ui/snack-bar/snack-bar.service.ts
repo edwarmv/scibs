@@ -5,6 +5,7 @@ import {
 } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { Injectable, InjectionToken, Injector } from '@angular/core';
+import { startWith, Subject, takeUntil } from 'rxjs';
 import { SnackBarComponent } from './snack-bar.component';
 
 export type SnackBarOpts = {
@@ -21,6 +22,9 @@ export const SNACK_BAR_DATA = new InjectionToken<SnackBarOpts>(
 export class SnackBarService {
   private overlayRef: OverlayRef;
   private timeoutID: NodeJS.Timeout;
+  private unsubscribe$ = new Subject<void>();
+  hoveredSubject = new Subject<boolean>();
+  hovered$ = this.hoveredSubject.asObservable();
 
   constructor(private overlay: Overlay, private injector: Injector) {}
 
@@ -49,14 +53,27 @@ export class SnackBarService {
       injector
     );
     this.overlayRef.attach(snackBarComponentPortal);
-    if (opts.duration) {
-      this.timeoutID = setTimeout(() => {
-        this.overlayRef.dispose();
-      }, opts.duration);
-    }
+    this.hovered$
+      .pipe(startWith(null), takeUntil(this.unsubscribe$))
+      .subscribe((hovered) => {
+        if (hovered === null && opts.duration) {
+          this.timeoutID = setTimeout(() => {
+            this.unsubscribe$.next();
+            this.overlayRef.dispose();
+          }, opts.duration);
+        }
+        if (hovered === true) {
+          clearTimeout(this.timeoutID);
+        }
+        if (hovered === false) {
+          this.unsubscribe$.next();
+          this.overlayRef.dispose();
+        }
+      });
   }
 
   close() {
+    this.unsubscribe$.next();
     this.overlayRef.dispose();
   }
 }

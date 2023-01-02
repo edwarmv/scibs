@@ -18,12 +18,20 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
       .addSelect('comprobanteEntradas.id', 'idComprobanteEntradas')
       .addSelect('comprobanteEntradas.fechaEntrada', 'fechaEntrada')
       .addSelect('comprobanteEntradas.saldoInicial', 'saldoInicial')
+      .addSelect(
+        'comprobanteEntradas.saldoGestionAnterior',
+        'saldoGestionAnterior'
+      )
       .addSelect('gestion.id', 'idGestion')
       .addSelect(
         'comprobanteEntradas.documento',
         'documentoComprobanteEntradas'
       )
-      .addSelect('proveedor.nombre', 'nombreProveedor')
+      .addSelect('proveedor.id', 'idProveedor')
+      .addSelect(
+        "IIF(comprobanteEntradas.saldoGestionAnterior = 1, 'Saldo gestión anterior', IIF(comprobanteEntradas.saldoInicial, 'Saldo inicialf', proveedor.nombre))",
+        'nombreProveedor'
+      )
       .addSelect('ordenOperacion.orden', 'orden')
       .addSelect('entrada.cantidad - IFNULL(movimiento.cantidad, 0)', 'stock')
       .addSelect('material.id', 'idMaterial')
@@ -70,11 +78,22 @@ export class StockMaterial {
   @ViewColumn()
   idComprobanteEntradas: number;
 
+  @ViewColumn({
+    transformer: {
+      from: (value): boolean => value === 1,
+      to: (value) => value,
+    },
+  })
+  saldoGestionAnterior: boolean;
+
   @ViewColumn()
   orden: number;
 
   @ViewColumn()
   fechaEntrada: string;
+
+  @ViewColumn()
+  idProveedor: number;
 
   @ViewColumn()
   nombreProveedor: string;

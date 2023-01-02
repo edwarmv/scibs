@@ -12,11 +12,12 @@ import { DropdownItem } from '@ui/dropdown/dropdown-item/dropdown-item.component
 import { DropdownDataCb } from '@ui/dropdown/dropdown.component';
 import { Column } from '@ui/table/table.component';
 import { TableDataSourceCb } from '@ui/table/table.data-source';
-import { debounceTime, map, Subject, takeUntil } from 'rxjs';
+import { debounceTime, map, Subject, take, takeUntil } from 'rxjs';
 import { ComprobanteSalidas } from 'src/app/models/comprobante-salidas.model';
 import { Gestion } from 'src/app/models/gestion.model';
 import { Material } from 'src/app/models/material.model';
 import { Salida } from 'src/app/models/salida.model';
+import { ComprobantesSalidasService } from 'src/app/services/comprobantes-salidas.service';
 import { GestionesService } from 'src/app/services/gestiones.service';
 import { MaterialesService } from 'src/app/services/materiales.service';
 import { SalidasService } from 'src/app/services/salidas.service';
@@ -82,6 +83,7 @@ export class SalidasComponent implements OnInit, OnDestroy {
     private salidasService: SalidasService,
     private materialesService: MaterialesService,
     private gestionesService: GestionesService,
+    private comprobantesSalidasService: ComprobantesSalidasService,
     private dialog: Dialog,
     private router: Router
   ) {}
@@ -133,16 +135,34 @@ export class SalidasComponent implements OnInit, OnDestroy {
     }
   }
 
-  openComprobantesSalidasDialog() {
-    this.dialog
-      .open<ComprobanteSalidas, ComprobanteSalidas>(
-        ComprobantesSalidasDialogComponent
-      )
-      .closed.subscribe((unidadManejo) => {
-        if (unidadManejo) {
-          this.fetchData();
-        }
-      });
+  openComprobantesSalidasDialog(salida?: Salida) {
+    if (salida) {
+      this.comprobantesSalidasService
+        .findOne(salida.comprobanteSalidas.id)
+        .pipe(take(1))
+        .subscribe((comprobanteSalida) => {
+          this.dialog
+            .open<ComprobanteSalidas, ComprobanteSalidas>(
+              ComprobantesSalidasDialogComponent,
+              { data: comprobanteSalida }
+            )
+            .closed.subscribe((comprobanteSalidas) => {
+              if (comprobanteSalidas) {
+                this.fetchData();
+              }
+            });
+        });
+    } else {
+      this.dialog
+        .open<ComprobanteSalidas, ComprobanteSalidas>(
+          ComprobantesSalidasDialogComponent
+        )
+        .closed.subscribe((comprobanteSalidas) => {
+          if (comprobanteSalidas) {
+            this.fetchData();
+          }
+        });
+    }
   }
 
   private _fetchData(): TableDataSourceCb<Salida> {

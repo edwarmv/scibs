@@ -9,6 +9,7 @@ export type CreateComprobanteEntradasDto = {
   documento: string;
   fechaEntrada: string;
   saldoInicial: boolean;
+  saldoGestionAnterior: boolean;
   proveedor: {
     id: number;
   };
@@ -40,13 +41,21 @@ export class ComprobantesEntradasService {
     skip: number;
     take: number;
     term?: string;
-    partidaId?: number;
+    saldoInicial?: boolean;
+    saldoGestionAnterior?: boolean;
+    gestionId?: string;
   }): Observable<{ values: ComprobanteEntradas[]; total: number }> {
     return this.http
       .get<{ values: ComprobanteEntradas[]; total: number }>(this.apiEndpoint, {
         params,
       })
       .pipe(tap(({ total }) => this.totalSubject.next(total)));
+  }
+
+  findOne(idComprobanteEntradas: number): Observable<ComprobanteEntradas> {
+    return this.http.get<ComprobanteEntradas>(
+      `${this.apiEndpoint}/${idComprobanteEntradas}`
+    );
   }
 
   create(body: CreateComprobanteEntradasDto): Observable<ComprobanteEntradas> {
@@ -113,5 +122,33 @@ export class ComprobantesEntradasService {
         return throwError(() => new Error(error));
       })
     );
+  }
+
+  cargarSaldosGestionAnterior(body: {
+    from: { id: number };
+    to: { id: number };
+    fechaEntrada: string;
+  }): Observable<void> {
+    return this.http
+      .post<void>(`${this.apiEndpoint}/cargar-saldos-gestion-anterior`, body)
+      .pipe(
+        take(1),
+        tap(() => {
+          this.snackBarService.open({
+            message: 'Saldos cargados correctamente',
+            duration: 3000,
+          });
+        }),
+        catchError((error) => {
+          if (error.status === 409) {
+            this.snackBarService.open({
+              message: error.error.message,
+              style: 'error',
+              duration: 3000,
+            });
+          }
+          return throwError(() => new Error(error));
+        })
+      );
   }
 }

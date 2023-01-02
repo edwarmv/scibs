@@ -12,15 +12,24 @@
 </ng-template>
 
 <ng-template #solicitanteColumn let-comprobanteSalidas="element">
-  <app-cell>
-    {{ comprobanteSalidas.solicitante.apellido | titlecase }}
-    {{ comprobanteSalidas.solicitante.nombre | titlecase }}
+  <app-cell *ngIf="comprobanteSalidas.vencido; else solicitante">
+    Vencido
   </app-cell>
+  <ng-template #solicitante>
+    <app-cell>
+      {{ comprobanteSalidas.solicitante.apellido | titlecase }}
+      {{ comprobanteSalidas.solicitante.nombre | titlecase }}
+    </app-cell>
+  </ng-template>
 </ng-template>
 
 <ng-template #documentoColumn let-comprobanteSalidas="element">
   <app-cell>
-    {{ comprobanteSalidas.documento }}
+    {{
+      comprobanteSalidas.documento
+        ? comprobanteSalidas.documento
+        : '000-' + comprobanteSalidas.id
+    }}
   </app-cell>
 </ng-template>
 
@@ -50,4 +59,23 @@
       [(ngModel)]="term"
     />
   </app-form-field>
+</ng-template>
+
+<ng-template #materialesVencidosFilter>
+  <app-checkbox [(ngModel)]="vencido" (ngModelChange)="onVencidoChange()">
+    Materiales vencidos
+  </app-checkbox>
+</ng-template>
+
+<ng-template #gestionesFilter>
+  <app-dropdown
+    [dataCb]="gestionesDropdownCb"
+    [showFilter]="true"
+    filterPlaceholder="Fecha"
+    [showClearSelectionBtn]="true"
+    emptyValueLabel="Gestión"
+    (valueChange)="onGestionChange($event)"
+  >
+    <app-icon prefix name="calendar"></app-icon>
+  </app-dropdown>
 </ng-template>

@@ -42,6 +42,5 @@ setDefaultOptions({ locale: es });
     },
   ],
   bootstrap: [AppComponent],
-  exports: [],
 })
 export class AppModule {}

@@ -18,6 +18,7 @@ import { DialogModule } from '@ui/dialog/dialog.module';
 import { UnidadesManejoDialogComponent } from './unidades-manejo/unidades-manejo-dialog/unidades-manejo-dialog.component';
 import { PartidasDialogComponent } from './partidas/partidas-dialog/partidas-dialog.component';
 import { MaterialesDialogComponent } from './materiales/materiales-dialog/materiales-dialog.component';
+import { TooltipModule } from '@ui/tooltip/tooltip.module';
 
 const routes: Routes = [
   {
@@ -67,6 +68,7 @@ const routes: Routes = [
     ButtonModule,
     TableModule,
     DialogModule,
+    TooltipModule,
   ],
 })
 export class MaterialesModule {}

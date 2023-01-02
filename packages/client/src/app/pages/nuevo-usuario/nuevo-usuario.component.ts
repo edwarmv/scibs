@@ -28,11 +28,11 @@ type Form = {
 export class NuevoUsuarioComponent implements OnInit {
   form: FormGroup<Form> = this.fb.nonNullable.group(
     {
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
+      nombre: ['edwar', Validators.required],
+      apellido: ['martinez', Validators.required],
+      username: ['edwarmv', [Validators.required]],
+      password: ['qwerasdf', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['qwerasdf', [Validators.required, Validators.minLength(8)]],
     },
     { validators: [passwordMatched] }
   );

@@ -4,6 +4,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Gestion } from '../gestiones/gestion.entity';
@@ -19,6 +20,13 @@ export class ComprobanteEntradas {
 
   @Column({ unique: true, nullable: true })
   documento: string;
+
+  @OneToOne(() => ComprobanteEntradas, { nullable: true })
+  @JoinColumn({ name: 'comprobante_saldo_gestion_anterior' })
+  comprobanteSaldoGestionAnterior: ComprobanteEntradas;
+
+  @Column({ default: false, name: 'saldo_gestion_anterior' })
+  saldoGestionAnterior: boolean;
 
   @Column({ name: 'fecha_entrada', type: 'datetime' })
   fechaEntrada: string;
@@ -45,7 +53,7 @@ export class ComprobanteEntradas {
   gestion: Gestion;
 
   @OneToMany(() => Entrada, (ingreso) => ingreso.comprobanteEntradas, {
-      cascade: ['insert', 'update', 'remove'],
+    cascade: true,
   })
   entradas: Entrada[];
 
@@ -54,7 +62,7 @@ export class ComprobanteEntradas {
     (ordenOperacion) => ordenOperacion.comprobantesEntradas,
     {
       nullable: false,
-      cascade: ['insert', 'update', 'remove'],
+      cascade: true,
     }
   )
   @JoinColumn({ name: 'orden_operaciones_id' })

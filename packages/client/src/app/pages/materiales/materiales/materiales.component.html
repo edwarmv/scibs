@@ -18,7 +18,7 @@
 </ng-template>
 
 <ng-template #stockMinimoColumn let-material="element">
-  <app-cell>
+  <app-cell [appTooltip]="getStockMaterial(material.id)">
     {{ material.stockMinimo }}
   </app-cell>
 </ng-template>
@@ -64,3 +64,14 @@
     emptyValueLabel="Partidas"
   ></app-dropdown>
 </ng-template>
+
+    <ng-template #gestionFilter>
+      <app-dropdown
+        [dataCb]="gestionesDropdownCb"
+        [showFilter]="true"
+        filterPlaceholder="Fecha"
+        [showClearSelectionBtn]="true"
+        emptyValueLabel="Gestión"
+        (valueChange)="onGestionChange($event)"
+      ></app-dropdown>
+    </ng-template>

@@ -6,7 +6,7 @@ import {
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
-import { format, formatISO } from 'date-fns';
+import { format } from 'date-fns';
 import { Gestion } from 'src/app/models/gestion.model';
 import { GestionesService } from 'src/app/services/gestiones.service';
 
@@ -38,13 +38,14 @@ export class GestionesDialogComponent implements OnInit {
       const { fechaApertura, fechaCierre } = this.data;
       this.gestionForm.patchValue({
         fechaApertura: format(new Date(fechaApertura), 'yyyy-MM-dd'),
-        fechaCierre,
+        fechaCierre: fechaCierre
+          ? format(new Date(fechaCierre), 'yyyy-MM-dd')
+          : '',
       });
     }
   }
 
   onSubmit() {
-    console.log(this.gestionForm.value, new Date());
     if (this.gestionForm.valid) {
       const { fechaApertura, fechaCierre } = this.gestionForm.value;
       if (this.data) {

@@ -35,7 +35,7 @@ export class Salida {
   material: Material;
 
   @OneToMany(() => Movimiento, (movimiento) => movimiento.salida, {
-    cascade: ['insert', 'remove'],
+    cascade: true,
   })
   movimientos: Movimiento[];
 }

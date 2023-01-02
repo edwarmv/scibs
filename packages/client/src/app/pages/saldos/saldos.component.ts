@@ -12,7 +12,16 @@ import { DropdownDataCb } from '@ui/dropdown/dropdown.component';
 import { Column } from '@ui/table/table.component';
 import { TableDataSourceCb } from '@ui/table/table.data-source';
 import Big from 'big.js';
-import { debounceTime, map, Subject, take, takeUntil } from 'rxjs';
+import {
+  debounceTime,
+  map,
+  Subject,
+  switchMap,
+  take,
+  takeUntil,
+  of,
+  combineLatest,
+} from 'rxjs';
 import { Gestion } from 'src/app/models/gestion.model';
 import { Material } from 'src/app/models/material.model';
 import { StockMaterial } from 'src/app/models/stock-material.model';
@@ -48,9 +57,13 @@ export class SaldosComponent implements OnInit, OnDestroy {
   @ViewChild('valorTotalColumn', { static: true })
   valorTotalColumn: TemplateRef<any>;
 
+  conSaldo = false;
+
   saldosNulos = false;
 
   saldosIniciales = false;
+
+  saldosGestionAnterior = false;
 
   term = '';
   termSubject = new Subject<string>();
@@ -60,12 +73,16 @@ export class SaldosComponent implements OnInit, OnDestroy {
 
   materialesDropdownCb: DropdownDataCb<Material>;
   selectedMaterial: Material | null = null;
-  stockMaterial = 0;
+  selectedMaterialSubject = new Subject<Material | null>();
+  selectedMaterial$ = this.selectedMaterialSubject.asObservable();
+  stockMaterial = { stock: 0, totalValorado: 0 };
 
   defaultMaterial: DropdownItem<Material> | null = null;
 
   gestionesDropdownCb: DropdownDataCb<Gestion>;
   selectedGestion: Gestion | null = null;
+  selectedGestionSubject = new Subject<Gestion | null>();
+  selectedGestion$ = this.selectedGestionSubject.asObservable();
 
   constructor(
     private stockMaterialesService: StockMaterialesService,
@@ -115,6 +132,58 @@ export class SaldosComponent implements OnInit, OnDestroy {
         }))
       );
 
+    combineLatest({
+      material: this.selectedMaterial$,
+      gestion: this.selectedGestion$,
+    })
+      .pipe(
+        switchMap(({ material, gestion }) => {
+          if (material && gestion) {
+            return this.stockMaterialesService
+              .findAll({
+                skip: 0,
+                take: 1,
+                idGestion: gestion.id.toString(),
+                idMaterial: material.id.toString(),
+              })
+              .pipe(
+                take(1),
+                switchMap(({ total }) =>
+                  this.stockMaterialesService
+                    .findAll({
+                      skip: 0,
+                      take: total,
+                      idGestion: gestion.id.toString(),
+                      idMaterial: material.id.toString(),
+                    })
+                    .pipe(
+                      switchMap(({ values }) => {
+                        let stock = 0;
+                        let totalValorado = 0;
+                        for (const value of values) {
+                          stock = new Big(stock).add(value.stock).toNumber();
+                          totalValorado = new Big(totalValorado)
+                            .add(
+                              new Big(value.stock).times(
+                                value.precioUnitarioEntrada
+                              )
+                            )
+                            .toNumber();
+                        }
+                        return of({ stock, totalValorado });
+                      })
+                    )
+                )
+              );
+          } else {
+            return of({ stock: 0, totalValorado: 0 });
+          }
+        })
+      )
+      .subscribe((stock) => {
+        this.stockMaterial = stock;
+      });
+
     const { material }: { material: Material } = window.history.state;
     if (material) {
       this.defaultMaterial = {
@@ -133,23 +202,26 @@ export class SaldosComponent implements OnInit, OnDestroy {
     this.fetchData();
   }
 
+  onConSaldoChange() {
+    this.fetchData();
+  }
+
   onSaldosInicialesChange() {
     this.fetchData();
   }
 
+  onSaldosGestionAnteriorChange() {
+    this.fetchData();
+  }
+
   onMaterialChange(material: Material | null) {
-    material &&
-      this.stockMaterialesService
-        .getStockMaterial(material.id)
-        .pipe(take(1))
-        .subscribe((stock) => {
-          this.stockMaterial = stock;
-        });
+    this.selectedMaterialSubject.next(material);
     this.selectedMaterial = material;
     this.fetchData();
   }
 
   onGestionChange(gestion: Gestion | null) {
+    this.selectedGestionSubject.next(gestion);
     this.selectedGestion = gestion;
     this.fetchData();
   }
@@ -168,6 +240,8 @@ export class SaldosComponent implements OnInit, OnDestroy {
           : '',
         saldosNulos: this.saldosNulos,
         saldosIniciales: this.saldosIniciales,
+        saldosGestionAnterior: this.saldosGestionAnterior,
+        conSaldo: this.conSaldo,
       });
     };
   }

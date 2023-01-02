@@ -4,8 +4,6 @@ import {
   OnInit,
   TemplateRef,
 } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { DropdownItem } from '@ui/dropdown/dropdown-item/dropdown-item.component';
 import { Subject, takeUntil } from 'rxjs';
 import { ComprobantesSalidasService } from 'src/app/services/comprobantes-salidas.service';
 import { SalidasService } from 'src/app/services/salidas.service';
@@ -74,6 +72,10 @@ export class SalidasComponent implements OnInit {
     } else if (component instanceof ComprobantesSalidasComponent) {
       this.actions = [component.createComprobanteSalidasButton];
       this.browser = component.filterInput;
+      this.filters = [
+        component.materialesVencidosFilter,
+        component.gestionesFilter,
+      ];
     }
     this.cd.detectChanges();
   }

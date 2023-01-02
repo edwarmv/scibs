@@ -20,7 +20,7 @@ export class GestionesService {
     skip: number;
     take: number;
     term?: string;
-    partidaId?: number;
+    gestionesAperturadas?: boolean;
   }): Observable<{ values: Gestion[]; total: number }> {
     return this.http
       .get<{ values: Gestion[]; total: number }>(this.apiEndpoint, {

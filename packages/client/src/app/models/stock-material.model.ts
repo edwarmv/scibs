@@ -3,9 +3,13 @@ export class StockMaterial {
 
   idComprobanteEntradas: number;
 
+  saldoGestionAnterior: boolean;
+
   orden: number;
 
   fechaEntrada: string;
+
+  idProveedor: number;
 
   nombreProveedor: string;
 
@@ -23,5 +27,5 @@ export class StockMaterial {
 
   idMaterial: number;
 
-  idGestion: boolean;
+  idGestion: number;
 }

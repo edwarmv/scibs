@@ -7,6 +7,8 @@ import { Usuario } from './usuario.model';
 export class ComprobanteEntradas {
   id: number;
   documento: string;
+  comprobanteSaldoGestionAnterior: ComprobanteEntradas;
+  saldoGestionAnterior: boolean;
   fechaEntrada: string;
   saldoInicial: boolean;
   usuario: Usuario;

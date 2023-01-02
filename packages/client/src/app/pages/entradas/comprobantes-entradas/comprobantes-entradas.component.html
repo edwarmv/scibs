@@ -13,24 +13,29 @@
 
 <ng-template #proveedorColumn let-comprobanteEntradas="element">
   <app-cell>
-    {{ comprobanteEntradas.proveedor.nombre | titlecase }}
+    {{ comprobanteEntradas | nombreProveedor }}
   </app-cell>
 </ng-template>
 
 <ng-template #documentoColumn let-comprobanteEntradas="element">
   <app-cell>
-    {{ comprobanteEntradas.documento }}
+    {{ comprobanteEntradas | documentoComprobateEntrada }}
   </app-cell>
 </ng-template>
 
 <ng-template #gestionColumn let-comprobanteEntradas="element">
   <app-cell>
-    {{ comprobanteEntradas.gestion.fechaApertura | date: 'Y' }}
-    - {{ comprobanteEntradas.gestion.fechaApertura | date: 'd/M/yyyy'
-    }}{{ comprobanteEntradas.gestion.fechaCierre ? ' - ' : ''
-    }}{{ comprobanteEntradas.gestion.fechaCierre | date: 'd/M/yyyy' }}
+    {{ comprobanteEntradas.gestion | gestion }}
   </app-cell>
 </ng-template>
+
+<ng-template #cargarSaldosAction>
+  <button appButtonOutline (click)="openCargarSaldosDialog()">
+    <app-icon name="cargar-saldo"></app-icon>
+    Cargar saldos
+  </button>
+</ng-template>
+
 
 <ng-template #createComprobanteEntradasButton>
   <button (click)="openComprobantesEntradasDialog()" appButton color="primary">
@@ -49,4 +54,35 @@
       [(ngModel)]="term"
     />
   </app-form-field>
+</ng-template>
+
+<ng-template #saldosInicialesFilter>
+  <app-checkbox
+    [(ngModel)]="saldoInicial"
+    (ngModelChange)="onSaldoInicialChange()"
+  >
+    Saldos iniciales
+  </app-checkbox>
+</ng-template>
+
+<ng-template #saldosGestionAnteriorFilter>
+  <app-checkbox
+    [(ngModel)]="saldoGestionAnterior"
+    (ngModelChange)="onSaldoGestionAnteriorChange()"
+  >
+    Saldos gestión anterior
+  </app-checkbox>
+</ng-template>
+
+<ng-template #gestionesFilter>
+  <app-dropdown
+    [dataCb]="gestionesDropdownCb"
+    [showFilter]="true"
+    filterPlaceholder="Fecha"
+    [showClearSelectionBtn]="true"
+    emptyValueLabel="Gestión"
+    (valueChange)="onGestionChange($event)"
+  >
+    <app-icon prefix name="calendar"></app-icon>
+  </app-dropdown>
 </ng-template>

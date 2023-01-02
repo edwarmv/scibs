@@ -9,5 +9,4 @@ export class Entrada {
   comprobanteEntradas: ComprobanteEntradas;
   material: Material;
   movimientos: Movimiento[];
-  entradaGestionAnterior: Entrada;
 }

@@ -47,7 +47,7 @@ export class ComprobanteSalidas {
   gestion: Gestion;
 
   @OneToMany(() => Salida, (salida) => salida.comprobanteSalidas, {
-    cascade: ['insert', 'remove'],
+    cascade: true,
   })
   salidas: Salida[];
 
@@ -56,7 +56,7 @@ export class ComprobanteSalidas {
     (ordenOperacion) => ordenOperacion.comprobantesSalidas,
     {
       nullable: false,
-      cascade: ['insert', 'remove'],
+      cascade: true,
     }
   )
   @JoinColumn({ name: 'orden_operaciones_id' })

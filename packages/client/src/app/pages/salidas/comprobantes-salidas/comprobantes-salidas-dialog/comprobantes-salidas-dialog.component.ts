@@ -5,7 +5,7 @@ import { getGestionLabel } from '@helpers/get-gestion-label.helper';
 import { formatISODateInputDate } from '@helpers/format-iso-date-input-date.helper';
 import { AutocompleteDataSourceCb } from '@ui/form-field/autocomplete.data-source';
 import { format } from 'date-fns';
-import { map, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, map, Subject, takeUntil } from 'rxjs';
 import { ComprobanteSalidas } from 'src/app/models/comprobante-salidas.model';
 import { Gestion } from 'src/app/models/gestion.model';
 import { Material } from 'src/app/models/material.model';
@@ -34,6 +34,7 @@ type SalidasFormArrayGroup = FormGroup<{
     prevNombre: FormControl<string>;
   }>;
   cantidad: FormControl<number>;
+  cantidadRegistrada: FormControl<number>;
 }>;
 
 type SalidasFormArray = FormArray<SalidasFormArrayGroup>;
@@ -49,7 +50,6 @@ type ComprobanteSalidasForm = FormGroup<{
   solicitante: FormGroup<{
     id: FormControl<number | null>;
     nombre: FormControl<string>;
-    prevNombre: FormControl<string>;
   }>;
   salidas: SalidasFormArray;
 }>;
@@ -66,7 +66,10 @@ export class ComprobantesSalidasDialogComponent {
 
   gestionesAutocompleteCb: AutocompleteDataSourceCb<Gestion>;
   selectedGestion?: Gestion;
+  gestionSubject = new BehaviorSubject<number | null>(null);
+  gestion$ = this.gestionSubject.asObservable();
   solicitantesAutocompleteCb: AutocompleteDataSourceCb<Solicitante>;
+  selectedSolicitante?: Solicitante;
   materialesAutocompleteCb: AutocompleteDataSourceCb<Material>;
 
   focusedRow = false;
@@ -139,10 +142,6 @@ export class ComprobantesSalidasDialogComponent {
           validators: Validators.required,
           nonNullable: true,
         }),
-        prevNombre: new FormControl('', {
-          validators: Validators.required,
-          nonNullable: true,
-        }),
       }),
       salidas: new FormArray<SalidasFormArrayGroup>(
         [],
@@ -160,22 +159,50 @@ export class ComprobantesSalidasDialogComponent {
       ),
     });
 
+    this.gestion?.get('id')?.valueChanges.subscribe((id) => {
+      this.gestionSubject.next(id);
+    });
+
+    this.vencido?.valueChanges
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((vencido) => {
+        if (vencido) {
+          this.documento?.disable();
+          this.solicitante?.disable();
+          this.documento?.setValue('000');
+          this.solicitante?.setValue({
+            id: null,
+            nombre: 'Vencido',
+          });
+        } else {
+          this.documento?.enable();
+          this.solicitante?.enable();
+          this.documento?.reset();
+          this.solicitante?.reset();
+        }
+      });
+
     if (this.data) {
       const { documento, fechaSalida, vencido, gestion, solicitante, salidas } =
         this.data;
       this.comprobanteSalidasForm.patchValue({
-        documento,
         fechaSalida: formatISODateInputDate(fechaSalida),
         vencido,
         gestion: {
           id: gestion.id,
           label: getGestionLabel(gestion),
         },
-        solicitante: {
-          id: solicitante.id,
-          nombre: titleCase(solicitante.nombre),
-        },
       });
+
+      if (documento) {
+        this.documento?.setValue(documento);
+        this.solicitante?.patchValue({
+          id: solicitante.id,
+          nombre: `${titleCase(solicitante.apellido)} ${titleCase(
+            solicitante.nombre
+          )}`,
+        });
+      }
 
       for (const salida of salidas) {
         this.salidas.push(this.genSalida(salida));
@@ -194,12 +221,16 @@ export class ComprobantesSalidasDialogComponent {
         }
       });
 
-    this.solicitante?.valueChanges
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(({ id, nombre, prevNombre }) => {
-        console.log({ nombre, prevNombre });
-        if (id && nombre && prevNombre && nombre !== prevNombre) {
-          console.log('reset id');
+    this.solicitante
+      ?.get('nombre')
+      ?.valueChanges.pipe(takeUntil(this.unsubscribe$))
+      .subscribe((value) => {
+        if (
+          this.selectedSolicitante &&
+          `${titleCase(this.selectedSolicitante.apellido)} ${titleCase(
+            this.selectedSolicitante.nombre
+          )}` !== value
+        ) {
           this.solicitante?.get('id')?.reset();
         }
       });
@@ -258,9 +289,15 @@ export class ComprobantesSalidasDialogComponent {
           validators: NumberGreaterThanValidator(),
           nonNullable: true,
         }),
+        cantidadRegistrada: new FormControl(0, {
+          nonNullable: true,
+        }),
       },
       {
-        asyncValidators: StockMaterialValidator(this.stockMaterialesService),
+        asyncValidators: StockMaterialValidator(
+          this.stockMaterialesService,
+          this.gestion$
+        ),
       }
     );
 
@@ -274,6 +311,7 @@ export class ComprobantesSalidasDialogComponent {
           prevNombre: material.nombre,
         },
         cantidad,
+        cantidadRegistrada: cantidad,
       });
     }
 
@@ -293,12 +331,10 @@ export class ComprobantesSalidasDialogComponent {
   }
 
   onSolicitanteChange(solicitante: Solicitante) {
+    this.selectedSolicitante = solicitante;
     this.solicitante?.patchValue({
       id: solicitante.id,
       nombre: `${titleCase(solicitante.apellido)} ${titleCase(
-        solicitante.nombre
-      )}`,
-      prevNombre: `${titleCase(solicitante.apellido)} ${titleCase(
         solicitante.nombre
       )}`,
     });

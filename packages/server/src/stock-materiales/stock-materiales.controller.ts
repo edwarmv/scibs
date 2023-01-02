@@ -25,7 +25,9 @@ export class StockMaterialesController {
       idGestion: string;
       idMaterial: string;
       saldosNulos: string;
+      conSaldo: string;
       saldosIniciales: string;
+      saldosGestionAnterior: string;
     }
   ): Promise<{ values: StockMaterial[]; total: number }> {
     return await this.stockMaterialesService.findAll(query);
@@ -33,10 +35,15 @@ export class StockMaterialesController {
 
   @Get(':idMaterial')
   async getStockMaterial(
-    @Param('idMaterial', ParseIntPipe) idMaterial: number
+    @Param('idMaterial', ParseIntPipe) idMaterial: number,
+    @Query()
+    query: {
+      idGestion: string;
+    }
   ): Promise<{ stock: number }> {
     const stock = await this.stockMaterialesService.getStockMaterial(
-      idMaterial
+      idMaterial,
+      query
     );
     return { stock };
   }

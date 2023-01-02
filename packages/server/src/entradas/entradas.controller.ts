@@ -19,6 +19,7 @@ export class EntradasController {
       gestionId: string;
       materialId: string;
       saldoInicial: string;
+      saldoGestionAnterior: string;
     }
   ): Promise<{ values: Entrada[]; total: number }> {
     return this.entradasService.findAll(query);

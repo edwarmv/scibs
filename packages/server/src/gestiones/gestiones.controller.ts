@@ -41,6 +41,7 @@ export class GestionesController {
       skip: number;
       take: number;
       term: string;
+      gestionesAperturadas: string;
     }
   ): Promise<{ values: Gestion[]; total: number }> {
     return await this.gestionesService.findAll(query);

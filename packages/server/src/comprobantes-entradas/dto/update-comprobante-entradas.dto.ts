@@ -1,9 +1,17 @@
-import { ArrayNotEmpty, IsDateString, IsNotEmpty } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsDateString,
+  IsNotEmpty,
+  ValidateIf,
+} from 'class-validator';
 import { Entrada } from 'src/entradas/entrada.entity';
 import { Gestion } from 'src/gestiones/gestion.entity';
 import { Proveedor } from 'src/proveedores/proveedor.entity';
 
 export class UpdateComprobanteEntradasDto {
+  @ValidateIf(
+    (o) => o.saldoGestionAnterior === false && o.saldoInicial === false
+  )
   @IsNotEmpty()
   documento: string;
 
@@ -13,6 +21,12 @@ export class UpdateComprobanteEntradasDto {
   @IsNotEmpty()
   saldoInicial: boolean;
 
+  @IsNotEmpty()
+  saldoGestionAnterior: boolean;
+
+  @ValidateIf(
+    (o) => o.saldoGestionAnterior === false && o.saldoInicial === false
+  )
   @IsNotEmpty()
   proveedor: Proveedor;
 

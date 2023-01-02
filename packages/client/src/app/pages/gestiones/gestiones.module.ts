@@ -11,6 +11,7 @@ import { ButtonModule } from '@ui/button/button.module';
 import { GestionesDialogComponent } from './gestiones-dialog/gestiones-dialog.component';
 import { TableModule } from '@ui/table/table.module';
 import { DialogModule } from '@ui/dialog/dialog.module';
+import { CheckboxModule } from '@ui/checkbox/checkbox.module';
 
 const routes: Routes = [
   {
@@ -29,6 +30,7 @@ const routes: Routes = [
     HeaderModule,
     IconModule,
     FormFieldModule,
+    CheckboxModule,
     InputModule,
     ButtonModule,
     TableModule,

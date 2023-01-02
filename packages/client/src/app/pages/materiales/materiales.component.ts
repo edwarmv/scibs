@@ -61,7 +61,7 @@ export class MaterialesComponent implements OnInit, OnDestroy {
     } else if (component instanceof MaterialesComponentChild) {
       this.actions = [component.createMaterialButton];
       this.browser = component.filterInput;
-      this.filters = [component.partidaFilter];
+      this.filters = [component.partidaFilter, component.gestionFilter];
     }
     this.cd.detectChanges();
   }

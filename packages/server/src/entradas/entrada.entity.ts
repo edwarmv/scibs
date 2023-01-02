@@ -4,24 +4,23 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
-} from "typeorm";
-import { ComprobanteEntradas } from "../comprobantes-entradas/comprobante-entradas.entity";
-import { Material } from "../materiales/material.entity";
-import { Movimiento } from "../movimientos/movimiento.entity";
+} from 'typeorm';
+import { ComprobanteEntradas } from '../comprobantes-entradas/comprobante-entradas.entity';
+import { Material } from '../materiales/material.entity';
+import { Movimiento } from '../movimientos/movimiento.entity';
 
 @Unique(['comprobanteEntradas', 'material'])
-@Entity("entradas")
+@Entity('entradas')
 export class Entrada {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "real" })
+  @Column({ type: 'real' })
   cantidad: number;
 
-  @Column({ name: "precio_unitario", type: "real" })
+  @Column({ name: 'precio_unitario', type: 'real' })
   precioUnitario: number;
 
   @ManyToOne(
@@ -29,20 +28,15 @@ export class Entrada {
     (comprobanteEntradas) => comprobanteEntradas.entradas,
     { nullable: false }
   )
-  @JoinColumn({ name: "comprobantes_entradas_id" })
+  @JoinColumn({ name: 'comprobantes_entradas_id' })
   comprobanteEntradas: ComprobanteEntradas;
 
   @ManyToOne(() => Material, (material) => material.entradas, {
     nullable: false,
   })
-  @JoinColumn({ name: "materiales_id" })
+  @JoinColumn({ name: 'materiales_id' })
   material: Material;
 
   @OneToMany(() => Movimiento, (movimiento) => movimiento.entrada)
   movimientos: Movimiento[];
-
-  @OneToOne(() => Entrada)
-  @JoinColumn({ name: "entrada_gestion_anterior_id" })
-  entradaGestionAnterior: Entrada;
 }
-

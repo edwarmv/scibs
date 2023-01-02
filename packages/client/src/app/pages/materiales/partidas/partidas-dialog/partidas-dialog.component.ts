@@ -1,6 +1,11 @@
 import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Partida } from 'src/app/models/partida.model';
 import { PartidasService } from 'src/app/partidas.service';
 
@@ -38,7 +43,7 @@ export class PartidasDialogComponent implements OnInit {
   onSubmit() {
     if (this.partidaForm.valid) {
       const { nombre, numero } = this.partidaForm.value;
-      if (nombre && numero) {
+      if (nombre && numero !== undefined) {
         if (this.data) {
           this.partidasService
             .update(this.data.id, { nombre, numero })

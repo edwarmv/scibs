@@ -19,7 +19,9 @@ export class StockMaterialesService {
     idGestion?: string;
     idMaterial?: string;
     saldosNulos?: boolean;
+    conSaldo?: boolean;
     saldosIniciales?: boolean;
+    saldosGestionAnterior?: boolean;
   }): Observable<{ values: StockMaterial[]; total: number }> {
     return this.http.get<{ values: StockMaterial[]; total: number }>(
       this.apiEndpoint,
@@ -27,9 +29,12 @@ export class StockMaterialesService {
     );
   }
 
-  getStockMaterial(idMaterial: number): Observable<number> {
+  getStockMaterial(
+    idMaterial: number,
+    params: { idGestion: number }
+  ): Observable<number> {
     return this.http
-      .get<{ stock: number }>(`${this.apiEndpoint}/${idMaterial}`)
+      .get<{ stock: number }>(`${this.apiEndpoint}/${idMaterial}`, { params })
       .pipe(map(({ stock }) => stock));
   }
 }

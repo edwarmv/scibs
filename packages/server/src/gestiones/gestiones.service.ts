@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { isAfter } from 'date-fns';
+import { isBefore } from 'date-fns';
 import { QueryFailedError, Repository } from 'typeorm';
 import { CreateGestionDto } from './dto/create-gestion.dto';
 import { UpdateGestionDto } from './dto/update-gestion.dto';
@@ -20,7 +20,7 @@ export class GestionesService {
     try {
       return await this.gestionRepository.save(gestion);
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
     }
   }
 
@@ -28,24 +28,25 @@ export class GestionesService {
     idGestion: number,
     { fechaApertura, fechaCierre }: UpdateGestionDto
   ): Promise<Gestion> {
+    if (
+      fechaCierre &&
+      fechaApertura &&
+      isBefore(new Date(fechaCierre), new Date(fechaApertura))
+    ) {
+      throw new ConflictException(
+        'La fecha de cierre debe ser posterior a la fecha de apertura'
+      );
+    }
+
     try {
-      if (fechaCierre) {
-        if (!isAfter(new Date(fechaCierre), new Date(fechaApertura))) {
-          throw new ConflictException(
-            'La fecha de cierre debe ser posterior a la fecha de apertura'
-          );
-        }
-        await this.gestionRepository.update(idGestion, {
-          fechaApertura,
-          fechaCierre,
-        });
-      }
+      await this.gestionRepository.update(idGestion, {
+        fechaApertura,
+        fechaCierre: fechaCierre ? fechaCierre : null,
+      });
 
       return await this.gestionRepository.findOneBy({ id: idGestion });
     } catch (error) {
-      if (error instanceof ConflictException) {
-        throw new ConflictException(error.message);
-      }
+      throw new Error(error);
     }
   }
 
@@ -53,21 +54,28 @@ export class GestionesService {
     skip = 0,
     take = 5,
     term = '',
+    gestionesAperturadas = '',
   }: {
     skip: number;
     take: number;
     term: string;
+    gestionesAperturadas: string;
   }): Promise<{ values: Gestion[]; total: number }> {
+    gestionesAperturadas = gestionesAperturadas === 'true' ? '1' : '';
     const [values, total] = await this.gestionRepository
       .createQueryBuilder('gestiones')
       .skip(skip)
       .take(take)
-      .where("STRFTIME('%d/%m/%Y', gestiones.fechaApertura) LIKE :term", {
-        term: `%${term}%`,
-      })
-      .orWhere("STRFTIME('%d/%m/%Y', gestiones.fechaCierre) LIKE :term", {
-        term: `%${term}%`,
-      })
+      .where(
+        `(
+            STRFTIME('%d/%m/%Y', gestiones.fechaApertura) LIKE :term
+              OR
+            STRFTIME('%d/%m/%Y', gestiones.fechaCierre) LIKE :term
+        )${gestionesAperturadas ? ' AND gestiones.fechaCierre ISNULL' : ''}`,
+        {
+          term: `%${term}%`,
+        }
+      )
       .orderBy('gestiones.fechaApertura', 'DESC')
       .getManyAndCount();
     return { values, total };

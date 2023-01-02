@@ -65,6 +65,7 @@ export class EntradasComponent implements OnInit, OnDestroy {
       this.browser = component.browser;
       this.filters = [
         component.saldosInicialesFilter,
+        component.saldosGestionAnteriorFilter,
         component.materialesFilter,
         component.gestionesFilter,
       ];
@@ -72,8 +73,16 @@ export class EntradasComponent implements OnInit, OnDestroy {
       this.actions = [component.createProveedorButton];
       this.browser = component.filterInput;
     } else if (component instanceof ComprobantesEntradasComponent) {
-      this.actions = [component.createComprobanteEntradasButton];
+      this.actions = [
+        component.cargarSaldosAction,
+        component.createComprobanteEntradasButton,
+      ];
       this.browser = component.filterInput;
+      this.filters = [
+        component.saldosInicialesFilter,
+        component.saldosGestionAnteriorFilter,
+        component.gestionesFilter,
+      ];
     }
     this.cd.detectChanges();
   }

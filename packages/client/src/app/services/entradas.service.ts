@@ -22,6 +22,7 @@ export class EntradasService {
     gestionId?: string;
     materialId?: string;
     saldoInicial?: boolean;
+    saldoGestionAnterior?: boolean;
   }): Observable<{ values: Entrada[]; total: number }> {
     return this.http
       .get<{ values: Entrada[]; total: number }>(this.apiEndpoint, { params })

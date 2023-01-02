@@ -14,7 +14,7 @@ import { MaterialesService } from 'src/app/services/materiales.service';
 import { GestionesService } from 'src/app/services/gestiones.service';
 import { Material } from 'src/app/models/material.model';
 import { Gestion } from 'src/app/models/gestion.model';
-import { debounceTime, map, Subject, takeUntil } from 'rxjs';
+import { debounceTime, map, Subject, take, takeUntil } from 'rxjs';
 import { getGestionLabel } from '@helpers/get-gestion-label.helper';
 import { titleCase } from 'title-case';
 import { DropdownDataCb } from '@ui/dropdown/dropdown.component';
@@ -23,6 +23,8 @@ import { ComprobantesEntradasDialogComponent } from '../comprobantes-entradas/co
 import { ComprobanteEntradas } from 'src/app/models/comprobante-entradas.model';
 import { Router } from '@angular/router';
 import { DropdownItem } from '@ui/dropdown/dropdown-item/dropdown-item.component';
+import { CargarSaldosDialogComponent } from '../cargar-saldos-dialog/cargar-saldos-dialog.component';
+import { ComprobantesEntradasService } from 'src/app/services/comprobantes-entradas.service';
 
 @Component({
   selector: 'app-entradas',
@@ -62,6 +64,9 @@ export class EntradasComponent implements OnInit, OnDestroy {
 
   @ViewChild('saldosInicialesFilter', { static: true })
   saldosInicialesFilter: TemplateRef<any>;
+  @ViewChild('saldosGestionAnteriorFilter', { static: true })
+  saldosGestionAnteriorFilter: TemplateRef<any>;
+  saldoGestionAnterior = false;
   @ViewChild('materialesFilter', { static: true })
   materialesFilter: TemplateRef<any>;
   @ViewChild('gestionesFilter', { static: true })
@@ -89,6 +94,7 @@ export class EntradasComponent implements OnInit, OnDestroy {
     private entradasService: EntradasService,
     private materialesService: MaterialesService,
     private gestionesService: GestionesService,
+    private comprobanteEntradasService: ComprobantesEntradasService,
     private dialog: Dialog,
     private router: Router
   ) {}
@@ -142,16 +148,40 @@ export class EntradasComponent implements OnInit, OnDestroy {
     }
   }
 
-  openComprobantesEntradasDialog() {
-    this.dialog
-      .open<ComprobanteEntradas, ComprobanteEntradas>(
-        ComprobantesEntradasDialogComponent
-      )
-      .closed.subscribe((unidadManejo) => {
-        if (unidadManejo) {
-          this.fetchData();
-        }
-      });
+  openComprobantesEntradasDialog(entrada?: Entrada) {
+    if (entrada) {
+      this.comprobanteEntradasService
+        .findOne(entrada.comprobanteEntradas.id)
+        .pipe(take(1))
+        .subscribe((comprobanteEntradas) => {
+          this.dialog
+            .open<ComprobanteEntradas, ComprobanteEntradas>(
+              ComprobantesEntradasDialogComponent,
+              {
+                data: comprobanteEntradas,
+              }
+            )
+            .closed.subscribe((comprobanteEntradas) => {
+              if (comprobanteEntradas) {
+                this.fetchData();
+              }
+            });
+        });
+    } else {
+      this.dialog
+        .open<ComprobanteEntradas, ComprobanteEntradas>(
+          ComprobantesEntradasDialogComponent
+        )
+        .closed.subscribe((comprobanteEntradas) => {
+          if (comprobanteEntradas) {
+            this.fetchData();
+          }
+        });
+    }
+  }
+
+  openCargarSaldosDialog() {
+    this.dialog.open(CargarSaldosDialogComponent);
   }
 
   calcValorTotal(cantidad: number, precioUnitario: number): number {
@@ -165,6 +195,7 @@ export class EntradasComponent implements OnInit, OnDestroy {
         take,
         term: this.term,
         saldoInicial: this.saldoInicial,
+        saldoGestionAnterior: this.saldoGestionAnterior,
         materialId: this.selectedMaterial
           ? this.selectedMaterial.id.toString()
           : '',
@@ -176,6 +207,10 @@ export class EntradasComponent implements OnInit, OnDestroy {
   }
 
   onSaldoInicialChange() {
+    this.fetchData();
+  }
+
+  onSaldoGestionAnteriorChange() {
     this.fetchData();
   }
 

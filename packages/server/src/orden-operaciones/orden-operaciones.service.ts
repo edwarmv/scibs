@@ -22,4 +22,8 @@ export class OrdenOperacionesService {
       return 0;
     }
   }
+
+  async remove(idOrdenOperacion: number): Promise<void> {
+    await this.ordenOperacionRepository.delete(idOrdenOperacion);
+  }
 }

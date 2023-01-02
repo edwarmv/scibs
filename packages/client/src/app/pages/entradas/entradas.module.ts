@@ -19,6 +19,8 @@ import { DialogModule } from '@ui/dialog/dialog.module';
 import { ComprobantesEntradasComponent } from './comprobantes-entradas/comprobantes-entradas.component';
 import { ProveedoresDialogComponent } from './proveedores/proveedores-dialog/proveedores-dialog.component';
 import { ComprobantesEntradasDialogComponent } from './comprobantes-entradas/comprobantes-entradas-dialog/comprobantes-entradas-dialog.component';
+import { CargarSaldosDialogComponent } from './cargar-saldos-dialog/cargar-saldos-dialog.component';
+import { PipesModule } from 'src/app/pipes/pipes.module';
 
 const routes: Routes = [
   {
@@ -53,6 +55,7 @@ const routes: Routes = [
     RegistrarEntradasComponent,
     ComprobantesEntradasComponent,
     ComprobantesEntradasDialogComponent,
+    CargarSaldosDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -69,6 +72,7 @@ const routes: Routes = [
     TabModule,
     TableModule,
     DialogModule,
+    PipesModule,
   ],
 })
 export class EntradasModule {}
