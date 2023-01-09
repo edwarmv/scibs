@@ -1,0 +1,7 @@
+/dist
+/node_modules
+/release-builds
+/client
+
+Session.vim
+.DS_Store
