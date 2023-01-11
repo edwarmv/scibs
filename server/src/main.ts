@@ -9,10 +9,11 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   const configService = app.get<ConfigService>(ConfigService);
   await app.listen(configService.get('PORT'), () => {
-    process.parentPort.postMessage({
-      type: 'SERVER_STARTED',
-      message: `Server started at ${configService.get('PORT')}`,
-    });
+    process.parentPort &&
+      process.parentPort.postMessage({
+        type: 'SERVER_STARTED',
+        message: `Server started at ${configService.get('PORT')}`,
+      });
   });
 }
 
