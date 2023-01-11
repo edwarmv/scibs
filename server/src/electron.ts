@@ -1,59 +1,50 @@
-import { app, BrowserWindow, screen } from 'electron';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { app, BrowserWindow, utilityProcess } from 'electron';
+import * as path from 'node:path';
 
-let server: INestApplication;
-
-export async function bootstrap() {
-  server = await NestFactory.create(AppModule);
-  server.enableCors();
-  server.useGlobalPipes(new ValidationPipe());
-  const configService = server.get<ConfigService>(ConfigService);
-  await server.listen(configService.get('PORT'));
-}
+const server = utilityProcess.fork(path.join(__dirname, 'main.js'), [], {
+  cwd: path.join(__dirname, '../'),
+});
 
 function createWindow() {
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { width, height } = primaryDisplay.workAreaSize;
-
   const mainWindow = new BrowserWindow({
-    height,
-    width,
+    height: 800,
+    width: 800,
   });
-
-  // and load the index.html of the app.
   mainWindow.loadFile('client/index.html');
-
-  // Open the DevTools.
   mainWindow.webContents.openDevTools();
+  return mainWindow;
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  bootstrap().then(() => {
-    createWindow();
+function createLoading() {
+  const loadingWindow = new BrowserWindow({
+    height: 200,
+    width: 200,
+    transparent: true,
+    frame: false,
+  });
+  loadingWindow.loadFile('loading.html');
+  return loadingWindow;
+}
 
-    app.on('activate', function () {
-      // On macOS it's common to re-create a window in the app when the
-      // dock icon is clicked and there are no other windows open.
-      if (BrowserWindow.getAllWindows().length === 0) createWindow();
-    });
+app.whenReady().then(() => {
+  const loadingWindow = createLoading();
+  server.on('message', (message) => {
+    if (message.type === 'SERVER_STARTED') {
+      loadingWindow.close();
+      createWindow();
+      app.on('activate', function () {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+      });
+    }
   });
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
-  server.close();
 });
 
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
+app.on('quit', () => {
+  server.kill();
+});

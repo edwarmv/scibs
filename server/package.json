@@ -26,7 +26,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "electron:start": "electron .",
-    "electron:package-mac": "electron-packager . --overwrite --asar --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds --darwinDarkModeSupport=true"
+    "electron:package-mac": "rimraf ../release-builds/\"Control de inventarios-darwin-x64\" && electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=../release-builds --darwinDarkModeSupport=true",
+    "electron:package-win": "rimraf ../release-builds/\"Control de inventarios-win32-x64\" && electron-packager . --overwrite --platform=win32 --arch=x64 --icon=assets/icons/win/icon.ico --prune=true --out=../release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Control de inventarios\""
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -41,6 +42,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "date-fns": "^2.29.3",
+    "electron-log": "^4.4.8",
     "log4js": "^6.7.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
