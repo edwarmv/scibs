@@ -7,13 +7,18 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-sqlalchemy = "^1.4.44"
+sqlalchemy = "^1.4.46"
 openpyxl = "^3.0.10"
-websockets = "^10.4"
+python-socketio = "^5.7.2"
+aiohttp = "^3.8.3"
 
 [tool.pyright]
 venvPath = "./"
 venv = ".venv"
+reportOptionalCall = 'none'
+executionEnvironments = [
+  { root = "reports" }
+]
 
 [build-system]
 requires = ["poetry-core"]

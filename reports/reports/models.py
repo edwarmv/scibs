@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import declarative_base
 
@@ -64,6 +64,9 @@ class OrdenOperacion(Base):
     comprobantes_salidas = relationship(
         'ComprobanteSalidas', back_populates='orden_operacion')
 
+    def __repr__(self) -> str:
+        return f'OrdenOperacion(id={self.id!r}, orden={self.orden!r}, comprobantes_entradas={self.comprobantes_entradas!r}, comprobantes_salidas={self.comprobantes_salidas!r})'
+
 
 class UnidadManejo(Base):
     __tablename__ = 'unidades_manejo'
@@ -81,6 +84,9 @@ class Partida(Base):
     nombre = Column(String)
     materiales = relationship('Material', back_populates='partida')
 
+    def __repr__(self) -> str:
+        return f'Partida(id={self.id!r}, numero={self.numero!r}, nombre={self.nombre!r})'
+
 
 class ComprobanteEntradas(Base):
     __tablename__ = 'comprobantes_entradas'
@@ -88,7 +94,8 @@ class ComprobanteEntradas(Base):
     id = Column(Integer, primary_key=True)
     documento = Column(String)
     fecha_entrada = Column(String)
-    saldo_inicial = Column(String)
+    saldo_inicial = Column(Boolean)
+    saldo_gestion_anterior = Column(Boolean)
     usuarios_id = Column(Integer, ForeignKey('usuarios.id'))
     usuario = relationship('Usuario', back_populates='comprobantes_entradas')
     proveedores_id = Column(Integer, ForeignKey('proveedores.id'))
@@ -100,6 +107,9 @@ class ComprobanteEntradas(Base):
     orden_operacion = relationship(
         'OrdenOperacion', back_populates='comprobantes_entradas')
     entradas = relationship('Entrada', back_populates='comprobante_entradas')
+
+    def __repr__(self) -> str:
+        return f'ComprobanteEntradas(id={self.id}, entradas={self.entradas!r})'
 
 
 class ComprobanteSalidas(Base):
@@ -121,6 +131,9 @@ class ComprobanteSalidas(Base):
         'OrdenOperacion', back_populates='comprobantes_salidas')
     salidas = relationship('Salida', back_populates='comprobante_salidas')
 
+    def __repr__(self) -> str:
+        return f'ComprobanteSalidas(id={self.id}, salidas={self.salidas!r})'
+
 
 class Material(Base):
     __tablename__ = 'materiales'
@@ -137,6 +150,9 @@ class Material(Base):
     entradas = relationship('Entrada', back_populates='material')
     salidas = relationship('Salida', back_populates='material')
 
+    def __repr__(self) -> str:
+        return f"Material(id={self.id!r}, codigo_index={self.codigo_index!r}, nombre={self.nombre!r}, stock_minimo={self.stock_minimo!r}, caracteristicas={self.caracteristicas!r})"
+
 
 class Entrada(Base):
     __tablename__ = 'entradas'
@@ -147,10 +163,13 @@ class Entrada(Base):
     comprobantes_entradas_id = Column(
         Integer, ForeignKey('comprobantes_entradas.id'))
     comprobante_entradas = relationship(
-        'ComprobanteEntradas', back_populates='entradas')
+        'ComprobanteEntradas', back_populates='entradas', lazy="select")
     materiales_id = Column(Integer, ForeignKey('materiales.id'))
     material = relationship('Material', back_populates='entradas')
-    entrada_gestion_anterior = Column(Integer)
+    movimientos = relationship('Movimiento', back_populates='entradas')
+
+    def __repr__(self) -> str:
+        return f'Entrada(id={self.id!r}, material={self.material!r})'
 
 
 class Salida(Base):
@@ -164,3 +183,18 @@ class Salida(Base):
         'ComprobanteSalidas', back_populates='salidas')
     materiales_id = Column(Integer, ForeignKey('materiales.id'))
     material = relationship('Material', back_populates='salidas')
+    movimientos = relationship('Movimiento', back_populates='salidas')
+
+    def __repr__(self) -> str:
+        return f'Salida(id={self.id!r}, material={self.material!r})'
+
+
+class Movimiento(Base):
+    __tablename__ = 'movimientos'
+
+    cantidad = Column(Integer)
+    orden = Column(Integer)
+    entradas_id = Column(Integer, ForeignKey('entradas.id'), primary_key=True)
+    entradas = relationship('Entrada', back_populates='movimientos')
+    salidas_id = Column(Integer, ForeignKey('salidas.id'), primary_key=True)
+    salidas = relationship('Salida', back_populates='movimientos')

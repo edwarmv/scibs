@@ -20,6 +20,8 @@ import { MovimientosModule } from './movimientos/movimientos.module';
 import { EntradasModule } from './entradas/entradas.module';
 import { SalidasModule } from './salidas/salidas.module';
 import { StockMaterialesModule } from './stock-materiales/stock-materiales.module';
+import { ReportEventsModule } from './report-events/report-events.module';
+import { SocketClientModule } from './socket-client/socket-client.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -46,6 +48,8 @@ const ENV = process.env.NODE_ENV;
     EntradasModule,
     SalidasModule,
     StockMaterialesModule,
+    ReportEventsModule,
+    SocketClientModule,
   ],
   controllers: [AppController],
   providers: [
