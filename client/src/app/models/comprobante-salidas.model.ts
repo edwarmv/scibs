@@ -8,7 +8,6 @@ export class ComprobanteSalidas {
   id: number;
   documento: string;
   fechaSalida: string;
-  vencido: boolean;
   usuario: Usuario;
   solicitante: Solicitante;
   gestion: Gestion;

@@ -5,7 +5,7 @@ import { ConfirmDialogService } from '@ui/confirm-dialog/confirm-dialog.service'
 import { DropdownDataCb } from '@ui/dropdown/dropdown.component';
 import { Column } from '@ui/table/table.component';
 import { TableDataSourceCb } from '@ui/table/table.data-source';
-import { debounceTime, map, Subject } from 'rxjs';
+import { debounceTime, map, Subject, take } from 'rxjs';
 import { ComprobanteEntradas } from 'src/app/models/comprobante-entradas.model';
 import { Gestion } from 'src/app/models/gestion.model';
 import { ComprobantesEntradasService } from 'src/app/services/comprobantes-entradas.service';
@@ -41,10 +41,6 @@ export class ComprobantesEntradasComponent implements OnInit {
   term = '';
   termSubject = new Subject<string>();
   term$ = this.termSubject.asObservable().pipe(debounceTime(300));
-
-  @ViewChild('saldosInicialesFilter', { static: true })
-  saldosInicialesFilter: TemplateRef<any>;
-  saldoInicial = false;
 
   @ViewChild('saldosGestionAnteriorFilter', { static: true })
   saldosGestionAnteriorFilter: TemplateRef<any>;
@@ -102,15 +98,33 @@ export class ComprobantesEntradasComponent implements OnInit {
   }
 
   openComprobantesEntradasDialog(value?: ComprobanteEntradas) {
-    this.dialog
-      .open<boolean, ComprobanteEntradas>(ComprobantesEntradasDialogComponent, {
-        data: value,
-      })
-      .closed.subscribe((value) => {
-        if (value) {
-          this.fetchData();
-        }
-      });
+    if (value) {
+      this.comprobantesEntradasService
+        .findOne(value.id)
+        .pipe(take(1))
+        .subscribe((comprobanteEntradas) => {
+          this.dialog
+            .open<boolean, ComprobanteEntradas>(
+              ComprobantesEntradasDialogComponent,
+              {
+                data: comprobanteEntradas,
+              }
+            )
+            .closed.subscribe((value) => {
+              if (value) {
+                this.fetchData();
+              }
+            });
+        });
+    } else {
+      this.dialog
+        .open<boolean, ComprobanteEntradas>(ComprobantesEntradasDialogComponent)
+        .closed.subscribe((value) => {
+          if (value) {
+            this.fetchData();
+          }
+        });
+    }
   }
 
   onBsRow(value: ComprobanteEntradas) {
@@ -120,13 +134,9 @@ export class ComprobantesEntradasComponent implements OnInit {
         message: `¿Desea eliminar el comprobante de entrada con documento ${
           value.documento ? value.documento : '000'
         } del proveedor ${
-          value.proveedor
-            ? titleCase(value.proveedor.nombre)
-            : value.saldoInicial
-            ? 'Saldo inicial'
-            : value.saldoGestionAnterior
+          value.saldoGestionAnterior
             ? 'Saldo gestión anterior'
-            : ''
+            : titleCase(value.proveedor.nombre)
         }?`,
       })
       .closed.subscribe((confirm) => {
@@ -136,10 +146,6 @@ export class ComprobantesEntradasComponent implements OnInit {
           });
         }
       });
-  }
-
-  onSaldoInicialChange() {
-    this.fetchData();
   }
 
   onSaldoGestionAnteriorChange() {
@@ -169,7 +175,6 @@ export class ComprobantesEntradasComponent implements OnInit {
         skip,
         take,
         term: this.term,
-        saldoInicial: this.saldoInicial,
         saldoGestionAnterior: this.saldoGestionAnterior,
         gestionId: this.selectedGestion
           ? this.selectedGestion.id.toString()

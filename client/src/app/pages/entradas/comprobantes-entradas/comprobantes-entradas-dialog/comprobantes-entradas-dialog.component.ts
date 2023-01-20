@@ -1,4 +1,4 @@
-import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
+import { Dialog, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { getGestionLabel } from '@helpers/get-gestion-label.helper';
@@ -22,6 +22,12 @@ import { ArrayDuplicateValidator } from 'src/app/validators/array-duplicate.vali
 import { ArrayMinValidator } from 'src/app/validators/array-min.validator';
 import { NumberGreaterThanValidator } from 'src/app/validators/number-greater-than.validator';
 import { titleCase } from 'title-case';
+import {
+  LotesDialogComponent,
+  LoteFormGroup,
+  LoteFormValue,
+} from './lotes-dialog/lotes-dialog.component';
+import { formatInputDateIsoDate } from '@helpers/format-input-date-iso-date.helper';
 
 type EntradasFormArrayGroup = FormGroup<{
   id: FormControl<number | null>;
@@ -32,6 +38,7 @@ type EntradasFormArrayGroup = FormGroup<{
   }>;
   precioUnitario: FormControl<number>;
   cantidad: FormControl<number>;
+  lotes: FormArray<LoteFormGroup>;
 }>;
 
 type EntradasFormArray = FormArray<EntradasFormArrayGroup>;
@@ -39,7 +46,6 @@ type EntradasFormArray = FormArray<EntradasFormArrayGroup>;
 type ComprobanteEntradasForm = FormGroup<{
   documento: FormControl<string>;
   fechaEntrada: FormControl<string>;
-  saldoInicial: FormControl<boolean>;
   saldoGestionAnterior: FormControl<boolean>;
   gestion: FormGroup<{
     id: FormControl<number | null>;
@@ -76,7 +82,8 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
     private gestionesService: GestionesService,
     private proveedoresService: ProveedoresService,
     private materialesService: MaterialesService,
-    private comprobantesEntradasService: ComprobantesEntradasService
+    private comprobantesEntradasService: ComprobantesEntradasService,
+    private dialog: Dialog
   ) {}
 
   ngOnInit(): void {
@@ -122,7 +129,6 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
         validators: Validators.required,
         nonNullable: true,
       }),
-      saldoInicial: new FormControl(false, { nonNullable: true }),
       saldoGestionAnterior: new FormControl(false, { nonNullable: true }),
       gestion: new FormGroup({
         id: new FormControl<number | null>(null, {
@@ -155,34 +161,12 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
       ),
     });
 
-    this.saldoInicial?.valueChanges
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((value) => {
-        if (value) {
-          this.documento?.disable();
-          this.proveedor?.disable();
-          this.documento?.setValue(this.data ? `000-${this.data.id}` : '000');
-          this.proveedor?.patchValue({
-            id: 0,
-            nombre: 'Saldo inicial',
-          });
-        } else {
-          if (this.saldoGestionAnterior?.value === false) {
-            this.documento?.reset();
-            this.proveedor?.reset();
-            this.documento?.enable();
-            this.proveedor?.enable();
-          }
-        }
-      });
-
     this.saldoGestionAnterior?.valueChanges
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((value) => {
         if (value) {
           this.documento?.disable();
           this.proveedor?.disable();
-          this.saldoInicial?.disable();
           this.documento?.setValue(this.data ? `000-${this.data.id}` : '000');
           this.proveedor?.patchValue({
             id: 0,
@@ -196,14 +180,12 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
         documento,
         fechaEntrada,
         saldoGestionAnterior,
-        saldoInicial,
         gestion,
         proveedor,
         entradas,
       } = this.data;
       this.comprobanteEntradasForm.patchValue({
         fechaEntrada: formatISODateInputDate(fechaEntrada),
-        saldoInicial,
         saldoGestionAnterior,
         gestion: {
           id: gestion.id,
@@ -218,7 +200,6 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
           nombre: titleCase(proveedor.nombre),
         });
       }
-
       for (const entrada of entradas) {
         this.entradas.push(this.genEntrada(entrada));
       }
@@ -254,9 +235,7 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
       const value = this.comprobanteEntradasForm
         .value as CreateComprobanteEntradasDto;
 
-      const fechaEntrada = new Date(
-        value.fechaEntrada + 'T00:00'
-      ).toISOString();
+      const fechaEntrada = formatInputDateIsoDate(value.fechaEntrada);
 
       if (this.data) {
         this.comprobantesEntradasService
@@ -264,7 +243,6 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
             ...value,
             ...{
               fechaEntrada,
-              saldoInicial: value.saldoInicial ? true : false,
             },
           })
           .subscribe(() => {
@@ -313,6 +291,7 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
         validators: NumberGreaterThanValidator(),
         nonNullable: true,
       }),
+      lotes: new FormArray<LoteFormGroup>([]),
     });
 
     if (entrada) {
@@ -327,6 +306,22 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
         precioUnitario,
         cantidad,
       });
+
+      const lotesForm = entradaGroup.get('lotes') as FormArray<LoteFormGroup>;
+      for (const lote of entrada.lotes) {
+        lotesForm.push(
+          new FormGroup({
+            id: new FormControl(lote.id),
+            fechaVencimiento: new FormControl(
+              formatISODateInputDate(lote.fechaVencimiento),
+              { nonNullable: true }
+            ),
+            lote: new FormControl(lote.lote, {
+              nonNullable: true,
+            }),
+          })
+        );
+      }
     }
 
     return entradaGroup;
@@ -360,8 +355,59 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
     });
   }
 
+  openLotesDialog(entradaRowId: number) {
+    this.dialog
+      .open<LoteFormValue[] | void, { lotes: LoteFormValue[] }>(
+        LotesDialogComponent,
+        {
+          data: {
+            lotes: this.entradas.at(entradaRowId).get('lotes')?.getRawValue(),
+          },
+        }
+      )
+      .closed.subscribe((value) => {
+        if (value) {
+          this.loadLotes(entradaRowId, value);
+        }
+        if (value?.length === 0) {
+          (
+            this.entradas
+              .at(entradaRowId)
+              .get('lotes') as FormArray<LoteFormGroup>
+          ).clear();
+        }
+      });
+  }
+
+  loadLotes(entradaRowId: number, lotesFormValue: LoteFormValue[]) {
+    const lotesForm = this.entradas
+      .at(entradaRowId)
+      .get('lotes') as FormArray<LoteFormGroup>;
+    lotesForm.clear();
+    for (const loteFormValue of lotesFormValue) {
+      const loteForm = new FormGroup({
+        id: new FormControl(loteFormValue.id),
+        fechaVencimiento: new FormControl(
+          formatInputDateIsoDate(loteFormValue.fechaVencimiento),
+          {
+            nonNullable: true,
+          }
+        ),
+        lote: new FormControl(loteFormValue.lote, { nonNullable: true }),
+      });
+      lotesForm.push(loteForm);
+    }
+  }
+
   close() {
     this.dialogRef.close();
+  }
+
+  hasLotes(entradaRowId: number): boolean {
+    const lotesForm = this.entradas
+      .at(entradaRowId)
+      .get('lotes') as FormArray<LoteFormGroup>;
+    return lotesForm.length > 0;
   }
 
   ngOnDestroy(): void {
@@ -379,10 +425,6 @@ export class ComprobantesEntradasDialogComponent implements OnInit, OnDestroy {
 
   get saldoGestionAnterior() {
     return this.comprobanteEntradasForm.get('saldoGestionAnterior');
-  }
-
-  get saldoInicial() {
-    return this.comprobanteEntradasForm.get('saldoInicial');
   }
 
   get gestion() {

@@ -8,7 +8,6 @@ import { ComprobanteSalidas } from '../models/comprobante-salidas.model';
 export type CreateComprobanteSalidasDto = {
   documento: string;
   fechaSalida: string;
-  vencido: boolean;
   solicitante: {
     id: number;
   };
@@ -39,7 +38,6 @@ export class ComprobantesSalidasService {
     skip: number;
     take: number;
     term?: string;
-    vencido?: boolean;
     gestionId?: string;
   }): Observable<{ values: ComprobanteSalidas[]; total: number }> {
     return this.http

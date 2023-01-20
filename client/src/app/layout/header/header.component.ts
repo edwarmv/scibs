@@ -28,8 +28,6 @@ export class HeaderComponent implements OnInit {
   @Input()
   headerTitle = '';
 
-  hola = ''
-
   constructor() {}
   ngOnInit(): void {
   }

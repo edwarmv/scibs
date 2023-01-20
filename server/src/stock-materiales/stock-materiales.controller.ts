@@ -26,7 +26,6 @@ export class StockMaterialesController {
       idMaterial: string;
       saldosNulos: string;
       conSaldo: string;
-      saldosIniciales: string;
       saldosGestionAnterior: string;
     }
   ): Promise<{ values: StockMaterial[]; total: number }> {

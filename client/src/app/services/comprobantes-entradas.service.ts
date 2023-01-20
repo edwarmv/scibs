@@ -8,7 +8,6 @@ import { ComprobanteEntradas } from '../models/comprobante-entradas.model';
 export type CreateComprobanteEntradasDto = {
   documento: string;
   fechaEntrada: string;
-  saldoInicial: boolean;
   saldoGestionAnterior: boolean;
   proveedor: {
     id: number;
@@ -41,7 +40,6 @@ export class ComprobantesEntradasService {
     skip: number;
     take: number;
     term?: string;
-    saldoInicial?: boolean;
     saldoGestionAnterior?: boolean;
     gestionId?: string;
   }): Observable<{ values: ComprobanteEntradas[]; total: number }> {

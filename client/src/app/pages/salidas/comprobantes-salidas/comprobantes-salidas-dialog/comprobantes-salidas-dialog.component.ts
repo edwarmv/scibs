@@ -42,7 +42,6 @@ type SalidasFormArray = FormArray<SalidasFormArrayGroup>;
 type ComprobanteSalidasForm = FormGroup<{
   documento: FormControl<string>;
   fechaSalida: FormControl<string>;
-  vencido: FormControl<boolean>;
   gestion: FormGroup<{
     id: FormControl<number | null>;
     label: FormControl<string>;
@@ -127,7 +126,6 @@ export class ComprobantesSalidasDialogComponent {
         validators: Validators.required,
         nonNullable: true,
       }),
-      vencido: new FormControl(false, { nonNullable: true }),
       gestion: new FormGroup({
         id: new FormControl<number | null>(null, {
           validators: Validators.required,
@@ -163,31 +161,11 @@ export class ComprobantesSalidasDialogComponent {
       this.gestionSubject.next(id);
     });
 
-    this.vencido?.valueChanges
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((vencido) => {
-        if (vencido) {
-          this.documento?.disable();
-          this.solicitante?.disable();
-          this.documento?.setValue('000');
-          this.solicitante?.setValue({
-            id: null,
-            nombre: 'Vencido',
-          });
-        } else {
-          this.documento?.enable();
-          this.solicitante?.enable();
-          this.documento?.reset();
-          this.solicitante?.reset();
-        }
-      });
-
     if (this.data) {
-      const { documento, fechaSalida, vencido, gestion, solicitante, salidas } =
+      const { documento, fechaSalida, gestion, solicitante, salidas } =
         this.data;
       this.comprobanteSalidasForm.patchValue({
         fechaSalida: formatISODateInputDate(fechaSalida),
-        vencido,
         gestion: {
           id: gestion.id,
           label: getGestionLabel(gestion),
@@ -363,10 +341,6 @@ export class ComprobantesSalidasDialogComponent {
 
   get fechaSalida() {
     return this.comprobanteSalidasForm.get('fechaSalida');
-  }
-
-  get vencido() {
-    return this.comprobanteSalidasForm.get('vencido');
   }
 
   get gestion() {

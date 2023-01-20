@@ -18,7 +18,6 @@ export class EntradasController {
       proveedorId: string;
       gestionId: string;
       materialId: string;
-      saldoInicial: string;
       saldoGestionAnterior: string;
     }
   ): Promise<{ values: Entrada[]; total: number }> {

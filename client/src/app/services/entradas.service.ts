@@ -21,7 +21,6 @@ export class EntradasService {
     proveedorId?: string;
     gestionId?: string;
     materialId?: string;
-    saldoInicial?: boolean;
     saldoGestionAnterior?: boolean;
   }): Observable<{ values: Entrada[]; total: number }> {
     return this.http

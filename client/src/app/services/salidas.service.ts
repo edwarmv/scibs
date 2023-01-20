@@ -21,7 +21,6 @@ export class SalidasService {
     solicitanteId?: string;
     gestionId?: string;
     materialId?: string;
-    vencido?: boolean;
   }): Observable<{ values: Salida[]; total: number }> {
     return this.http
       .get<{ values: Salida[]; total: number }>(this.apiEndpoint, { params })

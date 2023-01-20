@@ -81,7 +81,6 @@ export class SalidasService {
     solicitanteId = '',
     gestionId = '',
     materialId = '',
-    vencido = '',
   }: {
     skip: number;
     take: number;
@@ -89,9 +88,7 @@ export class SalidasService {
     solicitanteId: string;
     gestionId: string;
     materialId: string;
-    vencido: string;
   }): Promise<{ values: Salida[]; total: number }> {
-    vencido = vencido === 'true' ? '1' : '';
     const filters: string[] = [];
     if (solicitanteId) {
       filters.push('solicitante.id = :solicitanteId');
@@ -101,9 +98,6 @@ export class SalidasService {
     }
     if (materialId) {
       filters.push('material.id = :materialId');
-    }
-    if (vencido) {
-      filters.push('comprobanteSalidas.vencido = 1');
     }
     const [values, total] = await this.salidaRepository
       .createQueryBuilder('salida')
@@ -123,7 +117,7 @@ export class SalidasService {
           COALESCE(comprobanteSalidas.documento, '000-' || comprobanteSalidas.id) LIKE :term)${
             filters.length > 0 ? ' AND ' : ''
           }${filters.length > 0 ? '(' + filters.join(' AND ') + ')' : ''}`,
-        { solicitanteId, gestionId, materialId, vencido, term: `%${term}%` }
+        { solicitanteId, gestionId, materialId, term: `%${term}%` }
       )
       .orderBy('comprobanteSalidas.fechaSalida', 'DESC')
       .addOrderBy('ordenOperacion.orden', 'DESC')

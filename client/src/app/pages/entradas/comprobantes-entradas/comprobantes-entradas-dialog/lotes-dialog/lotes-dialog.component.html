@@ -1,0 +1,81 @@
+<app-dialog-title>
+  Lotes
+  <button *ngIf="!data.read" appIconButton color="primary" (click)="addLote()">
+    <app-icon name="add"></app-icon>
+  </button>
+</app-dialog-title>
+
+<app-dialog-content>
+  <form
+    class="w-full max-h-[500px] overflow-auto"
+    (ngSubmit)="!data.read && onSubmit()"
+  >
+    <table
+      class="border-separate border-spacing-x-0 border-spacing-y-2 px-[30px] pb-[30px] w-full"
+    >
+      <thead>
+        <tr class="bg-gray-100 text-gray-400 h-[40px] body-small">
+          <th class="text-left px-4 rounded-l-[16px]">Nº</th>
+          <th class="text-left pr-4">Lote</th>
+          <th class="text-left pr-4 rounded-r-[16px]">Fecha de vencimiento</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr
+          [tabindex]="i + 1"
+          (focus)="focusedRow = true"
+          (blur)="focusedRow = false"
+          (keydown.backspace)="!data.read && focusedRow && removeLote(i)"
+          *ngFor="let loteControl of lotesForm.controls; index as i"
+          [formGroup]="loteControl"
+          class="hover:default-box-shadow focus:ring-1 focus:ring-red-700 rounded-[16px] outline-none"
+        >
+          <td class="px-4 py-3">{{ i + 1 }}</td>
+
+          <td class="pr-4 py-3">
+            <app-form-field>
+              <app-label>Lote</app-label>
+              <input
+                (keydown.backspace)="$event.stopPropagation()"
+                appInput
+                formControlName="lote"
+              />
+              <app-error *ngIf="loteControl.get('lote')?.hasError('required')">
+                Campo requerido
+              </app-error>
+            </app-form-field>
+          </td>
+
+          <td class="pr-4 py-3">
+            <app-form-field>
+              <app-label>Fecha de vencimiento</app-label>
+              <input
+                (keydown.backspace)="$event.stopPropagation()"
+                appInput
+                formControlName="fechaVencimiento"
+                type="date"
+              />
+              <app-error
+                *ngIf="
+                  loteControl.get('fechaVencimiento')?.hasError('required')
+                "
+              >
+                Campo requerido
+              </app-error>
+            </app-form-field>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+</app-dialog-content>
+
+<app-dialog-actions>
+  <button appButton color="secondary" (click)="close()">
+    {{ data.read ? 'Cerrar' : 'Cancelar' }}
+  </button>
+  <button *ngIf="!data.read" appButton color="primary" (click)="onSubmit()">
+    Aceptar
+  </button>
+</app-dialog-actions>

@@ -10,7 +10,6 @@ export class ComprobanteEntradas {
   comprobanteSaldoGestionAnterior: ComprobanteEntradas;
   saldoGestionAnterior: boolean;
   fechaEntrada: string;
-  saldoInicial: boolean;
   usuario: Usuario;
   proveedor: Proveedor;
   gestion: Gestion;

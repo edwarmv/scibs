@@ -66,7 +66,6 @@ export class ComprobantesEntradasController {
       skip: number;
       take: number;
       term: string;
-      saldoInicial: string;
       saldoGestionAnterior: string;
       gestionId: string;
     }

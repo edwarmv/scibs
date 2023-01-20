@@ -54,8 +54,6 @@ export class SalidasComponent implements OnInit, OnDestroy {
   @ViewChild('registrarSalidasAction', { static: true })
   registrarSalidasAction: TemplateRef<any>;
 
-  @ViewChild('materialesVencidosFilter', { static: true })
-  materialesVencidosFilter: TemplateRef<any>;
   @ViewChild('materialesFilter', { static: true })
   materialesFilter: TemplateRef<any>;
   @ViewChild('gestionesFilter', { static: true })
@@ -68,8 +66,6 @@ export class SalidasComponent implements OnInit, OnDestroy {
   term$ = this.termSubject
     .asObservable()
     .pipe(takeUntil(this.unsubscribe$), debounceTime(300));
-
-  vencido = false;
 
   materialesDropdownCb: DropdownDataCb<Material>;
   selectedMaterial: Material | null = null;
@@ -171,7 +167,6 @@ export class SalidasComponent implements OnInit, OnDestroy {
         skip,
         take,
         term: this.term,
-        vencido: this.vencido,
         materialId: this.selectedMaterial
           ? this.selectedMaterial.id.toString()
           : '',
@@ -180,10 +175,6 @@ export class SalidasComponent implements OnInit, OnDestroy {
           : '',
       });
     };
-  }
-
-  onVencidoChange() {
-    this.fetchData();
   }
 
   onMaterialChange(material: Material | null) {

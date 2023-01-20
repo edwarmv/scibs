@@ -62,7 +62,6 @@ export class SalidasComponent implements OnInit {
       ];
       this.browser = component.browser;
       this.filters = [
-        component.materialesVencidosFilter,
         component.materialesFilter,
         component.gestionesFilter,
       ];
@@ -73,7 +72,6 @@ export class SalidasComponent implements OnInit {
       this.actions = [component.createComprobanteSalidasButton];
       this.browser = component.filterInput;
       this.filters = [
-        component.materialesVencidosFilter,
         component.gestionesFilter,
       ];
     }

@@ -25,6 +25,8 @@ import { Router } from '@angular/router';
 import { DropdownItem } from '@ui/dropdown/dropdown-item/dropdown-item.component';
 import { CargarSaldosDialogComponent } from '../cargar-saldos-dialog/cargar-saldos-dialog.component';
 import { ComprobantesEntradasService } from 'src/app/services/comprobantes-entradas.service';
+import { LotesDialogComponent } from '../comprobantes-entradas/comprobantes-entradas-dialog/lotes-dialog/lotes-dialog.component';
+import { Lote } from 'src/app/models/lote.model';
 
 @Component({
   selector: 'app-entradas',
@@ -50,6 +52,8 @@ export class EntradasComponent implements OnInit, OnDestroy {
   precioUnitarioColumn: TemplateRef<any>;
   @ViewChild('valorTotalColumn', { static: true })
   valorTotalColumn: TemplateRef<any>;
+  @ViewChild('loteColumn', { static: true })
+  loteColumn: TemplateRef<any>;
 
   @ViewChild('cargarSaldosAction', { static: true })
   cargarSaldosAction: TemplateRef<any>;
@@ -62,8 +66,6 @@ export class EntradasComponent implements OnInit, OnDestroy {
   @ViewChild('registrarEntradasAction', { static: true })
   registrarEntradasAction: TemplateRef<any>;
 
-  @ViewChild('saldosInicialesFilter', { static: true })
-  saldosInicialesFilter: TemplateRef<any>;
   @ViewChild('saldosGestionAnteriorFilter', { static: true })
   saldosGestionAnteriorFilter: TemplateRef<any>;
   saldoGestionAnterior = false;
@@ -79,8 +81,6 @@ export class EntradasComponent implements OnInit, OnDestroy {
   term$ = this.termSubject
     .asObservable()
     .pipe(takeUntil(this.unsubscribe$), debounceTime(300));
-
-  saldoInicial = false;
 
   materialesDropdownCb: DropdownDataCb<Material>;
   selectedMaterial: Material | null = null;
@@ -109,6 +109,7 @@ export class EntradasComponent implements OnInit, OnDestroy {
       { name: 'Cantidad', template: this.cantidadColumn },
       { name: 'Precio unitario (Bs.)', template: this.precioUnitarioColumn },
       { name: 'Valor total (Bs.)', template: this.valorTotalColumn },
+      { name: 'Lote', template: this.loteColumn },
     ];
 
     this.fetchData();
@@ -155,25 +156,23 @@ export class EntradasComponent implements OnInit, OnDestroy {
         .pipe(take(1))
         .subscribe((comprobanteEntradas) => {
           this.dialog
-            .open<ComprobanteEntradas, ComprobanteEntradas>(
+            .open<boolean, ComprobanteEntradas>(
               ComprobantesEntradasDialogComponent,
               {
                 data: comprobanteEntradas,
               }
             )
-            .closed.subscribe((comprobanteEntradas) => {
-              if (comprobanteEntradas) {
+            .closed.subscribe((value) => {
+              if (value) {
                 this.fetchData();
               }
             });
         });
     } else {
       this.dialog
-        .open<ComprobanteEntradas, ComprobanteEntradas>(
-          ComprobantesEntradasDialogComponent
-        )
-        .closed.subscribe((comprobanteEntradas) => {
-          if (comprobanteEntradas) {
+        .open<boolean, ComprobanteEntradas>(ComprobantesEntradasDialogComponent)
+        .closed.subscribe((value) => {
+          if (value) {
             this.fetchData();
           }
         });
@@ -182,6 +181,12 @@ export class EntradasComponent implements OnInit, OnDestroy {
 
   openCargarSaldosDialog() {
     this.dialog.open(CargarSaldosDialogComponent);
+  }
+
+  openLotesDialog(lotes: Lote[]) {
+    this.dialog.open<void, { lotes: Lote[], read: boolean }>(LotesDialogComponent, {
+      data: { lotes, read: true },
+    });
   }
 
   calcValorTotal(cantidad: number, precioUnitario: number): number {
@@ -194,7 +199,6 @@ export class EntradasComponent implements OnInit, OnDestroy {
         skip,
         take,
         term: this.term,
-        saldoInicial: this.saldoInicial,
         saldoGestionAnterior: this.saldoGestionAnterior,
         materialId: this.selectedMaterial
           ? this.selectedMaterial.id.toString()
@@ -204,10 +208,6 @@ export class EntradasComponent implements OnInit, OnDestroy {
           : '',
       });
     };
-  }
-
-  onSaldoInicialChange() {
-    this.fetchData();
   }
 
   onSaldoGestionAnteriorChange() {

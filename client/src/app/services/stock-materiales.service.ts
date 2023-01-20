@@ -20,7 +20,6 @@ export class StockMaterialesService {
     idMaterial?: string;
     saldosNulos?: boolean;
     conSaldo?: boolean;
-    saldosIniciales?: boolean;
     saldosGestionAnterior?: boolean;
   }): Observable<{ values: StockMaterial[]; total: number }> {
     return this.http.get<{ values: StockMaterial[]; total: number }>(

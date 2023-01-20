@@ -12,7 +12,7 @@
 
 <ng-template #fechaColumn let-entrada="element">
   <app-cell>
-    {{ entrada.comprobanteEntradas.fechaEntrada | date: 'd/M/yyyy' }}
+    {{ entrada.comprobanteEntradas.fechaEntrada | date : 'd/M/yyyy' }}
   </app-cell>
 </ng-template>
 
@@ -43,6 +43,22 @@
 <ng-template #valorTotalColumn let-entrada="element">
   <app-cell>
     {{ calcValorTotal(entrada.cantidad, entrada.precioUnitario) | currency }}
+  </app-cell>
+</ng-template>
+
+<ng-template #loteColumn let-entrada="element">
+  <app-cell>
+    <button
+      *ngIf="entrada.lotes.length > 0; else elseLote"
+      appIconButton
+      color="primary"
+      (click)="openLotesDialog(entrada.lotes)"
+    >
+      <app-icon name="eye"></app-icon>
+    </button>
+    <ng-template #elseLote>
+      <div>-</div>
+    </ng-template>
   </app-cell>
 </ng-template>
 
@@ -99,8 +115,8 @@
 </ng-template>
 
 <ng-template #browser>
-  <app-form-field class="w-[280px]">
-    <app-label>Fecha / Proveedor / Documento</app-label>
+  <app-form-field class="w-[320px]">
+    <app-label>Fecha / Proveedor / Documento / Lote</app-label>
     <app-icon name="research" appPrefix></app-icon>
     <input
       appInput
@@ -108,15 +124,6 @@
       (ngModelChange)="termSubject.next($event)"
     />
   </app-form-field>
-</ng-template>
-
-<ng-template #saldosInicialesFilter>
-  <app-checkbox
-    [(ngModel)]="saldoInicial"
-    (ngModelChange)="onSaldoInicialChange()"
-  >
-    Saldos iniciales
-  </app-checkbox>
 </ng-template>
 
 <ng-template #saldosGestionAnteriorFilter>

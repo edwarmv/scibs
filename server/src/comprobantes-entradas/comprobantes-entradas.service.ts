@@ -6,6 +6,7 @@ import { Entrada } from 'src/entradas/entrada.entity';
 import { DbConstraintError } from 'src/errors/db-constraint.error';
 import { GestionesService } from 'src/gestiones/gestiones.service';
 import { getDbErrorMsgFields } from 'src/helpers/db-error-msg.helper';
+import { Lote } from 'src/lote/lote.entity';
 import { Material } from 'src/materiales/material.entity';
 import { OrdenOperacion } from 'src/orden-operaciones/orden-operacion.entity';
 import { OrdenOperacionesService } from 'src/orden-operaciones/orden-operaciones.service';
@@ -34,7 +35,6 @@ export class ComprobantesEntradasService {
     {
       documento,
       fechaEntrada,
-      saldoInicial,
       proveedor,
       gestion,
       entradas,
@@ -53,11 +53,14 @@ export class ComprobantesEntradasService {
       usuario.id = user.sub;
       comprobanteEntradas.usuario = usuario;
       comprobanteEntradas.fechaEntrada = fechaEntrada;
-      comprobanteEntradas.saldoInicial = saldoInicial;
       comprobanteEntradas.saldoGestionAnterior = saldoGestionAnterior;
       comprobanteEntradas.gestion = gestion;
       comprobanteEntradas.entradas = entradas.map((entrada) => {
         delete entrada.id;
+        entrada.lotes = entrada.lotes.map((lote) => ({
+          ...lote,
+          lote: lote.lote.toLowerCase(),
+        }));
         return entrada;
       });
 
@@ -68,7 +71,7 @@ export class ComprobantesEntradasService {
           comprobanteSaldoGestionAnterior;
       }
 
-      if (saldoInicial === false && saldoGestionAnterior === false) {
+      if (saldoGestionAnterior === false) {
         comprobanteEntradas.documento = documento;
         comprobanteEntradas.proveedor = proveedor;
       }
@@ -103,7 +106,6 @@ export class ComprobantesEntradasService {
     {
       documento,
       fechaEntrada,
-      saldoInicial,
       saldoGestionAnterior,
       proveedor,
       gestion,
@@ -120,10 +122,9 @@ export class ComprobantesEntradasService {
 
       comprobanteEntradas.id = idComprobanteEntradas;
       comprobanteEntradas.fechaEntrada = fechaEntrada;
-      comprobanteEntradas.saldoInicial = saldoInicial;
       comprobanteEntradas.gestion = gestion;
 
-      if (saldoGestionAnterior === false && saldoInicial === false) {
+      if (saldoGestionAnterior === false) {
         comprobanteEntradas.documento = documento;
         comprobanteEntradas.proveedor = proveedor;
       }
@@ -136,7 +137,7 @@ export class ComprobantesEntradasService {
       const currentComprobanteEntradas =
         await this.comprobanteEntradasRepository.findOne({
           where: { id: idComprobanteEntradas },
-          relations: { entradas: { material: true } },
+          relations: { entradas: { material: true, lotes: true } },
         });
       const currentEntradas = currentComprobanteEntradas.entradas;
 
@@ -147,6 +148,9 @@ export class ComprobantesEntradasService {
       );
 
       for (const removedEntrada of removedEntradas) {
+        for (const lote of removedEntrada.lotes) {
+          await queryRunner.manager.delete(Lote, lote);
+        }
         await queryRunner.manager.delete(Entrada, removedEntrada);
       }
 
@@ -161,6 +165,20 @@ export class ComprobantesEntradasService {
         const material = new Material();
         material.id = entrada.material.id;
         _entrada.material = entrada.material;
+        _entrada.lotes = entrada.lotes.map((lote) => ({
+          ...lote,
+          lote: lote.lote.toLowerCase(),
+        }));
+        const lotesId = entrada.lotes.map((lote) => lote.id);
+        const currentLotes = currentEntradas.find(
+          (value) => value.id === entrada.id
+        ).lotes;
+
+        const removedLotes = currentLotes.filter(
+          (x) => !lotesId.includes(x.id)
+        );
+        removedLotes.length > 0 &&
+          (await queryRunner.manager.delete(Lote, removedLotes));
 
         await queryRunner.manager.save<Entrada>(_entrada);
       }
@@ -186,22 +204,16 @@ export class ComprobantesEntradasService {
     skip = 0,
     take = 5,
     term = '',
-    saldoInicial = '',
     saldoGestionAnterior = '',
     gestionId = '',
   }: {
     skip: number;
     take: number;
     term: string;
-    saldoInicial: string;
     saldoGestionAnterior: string;
     gestionId: string;
   }): Promise<{ values: ComprobanteEntradas[]; total: number }> {
-    saldoInicial = saldoInicial === 'true' ? '1' : '';
     const filters: string[] = [];
-    if (saldoInicial) {
-      filters.push('comprobanteEntradas.saldoInicial = 1');
-    }
     if (saldoGestionAnterior === 'true') {
       filters.push('comprobanteEntradas.saldoGestionAnterior = 1');
     }
@@ -214,13 +226,7 @@ export class ComprobantesEntradasService {
       .take(take)
       .leftJoinAndSelect('comprobanteEntradas.proveedor', 'proveedor')
       .leftJoinAndSelect('comprobanteEntradas.gestion', 'gestion')
-      .leftJoinAndSelect('comprobanteEntradas.entradas', 'entradas')
       .leftJoinAndSelect('comprobanteEntradas.ordenOperacion', 'ordenOperacion')
-      .leftJoinAndSelect(
-        'comprobanteEntradas.comprobanteSaldoGestionAnterior',
-        'comprobanteSaldoGestionAnterior'
-      )
-      .leftJoinAndSelect('entradas.material', 'material')
       .where(
         `(COALESCE(comprobanteEntradas.documento, '000-' || comprobanteEntradas.id) LIKE :term
             OR
@@ -242,7 +248,7 @@ export class ComprobantesEntradasService {
         comprobanteSaldoGestionAnterior: true,
         proveedor: true,
         gestion: true,
-        entradas: { material: true },
+        entradas: { material: true, lotes: true },
       },
     });
   }
@@ -251,7 +257,7 @@ export class ComprobantesEntradasService {
     const comprobanteEntradas =
       await this.comprobanteEntradasRepository.findOne({
         where: { id: idComprobanteEntradas },
-        relations: { entradas: true, ordenOperacion: true },
+        relations: { entradas: { lotes: true }, ordenOperacion: true },
       });
 
     if (!comprobanteEntradas) {
@@ -285,6 +291,9 @@ export class ComprobantesEntradasService {
     await queryRunner.startTransaction();
     try {
       for (const entrada of comprobanteEntradas.entradas) {
+        if (entrada.lotes.length > 0) {
+          await queryRunner.manager.delete(Lote, entrada.lotes);
+        }
         await queryRunner.manager.delete(Entrada, entrada.id);
       }
       await queryRunner.manager.delete(
@@ -338,7 +347,6 @@ export class ComprobantesEntradasService {
     type comprobantesMap = {
       idComprobanteEntradas: number;
       idProveedor: number;
-      saldoInicial: boolean;
       entradas: {
         idMaterial: number;
         cantidad: number;
@@ -362,7 +370,6 @@ export class ComprobantesEntradasService {
         const comprobante: comprobantesMap = {
           idComprobanteEntradas: value.idComprobanteEntradas,
           idProveedor: value.idProveedor,
-          saldoInicial: value.saldoInicial,
           entradas: [entrada],
         };
         comprobantes.set(value.idComprobanteEntradas, comprobante);
@@ -376,7 +383,6 @@ export class ComprobantesEntradasService {
         {
           fechaEntrada,
           proveedor,
-          saldoInicial: comprobante.saldoInicial,
           entradas: comprobante.entradas.map((value): Entrada => {
             const entrada = new Entrada();
             const material = new Material();

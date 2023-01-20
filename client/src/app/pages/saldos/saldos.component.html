@@ -52,15 +52,6 @@
 
     <ng-template appHeaderFilter>
       <app-checkbox
-        [(ngModel)]="saldosIniciales"
-        (ngModelChange)="onSaldosInicialesChange()"
-      >
-        Saldos iniciales
-      </app-checkbox>
-    </ng-template>
-
-    <ng-template appHeaderFilter>
-      <app-checkbox
         [(ngModel)]="saldosGestionAnterior"
         (ngModelChange)="onSaldosGestionAnteriorChange()"
       >
@@ -105,8 +96,6 @@
       {{
         stockMaterial.saldoGestionAnterior
           ? 'Saldo gestión anterior'
-          : stockMaterial.saldoInicial
-          ? 'Saldo inicial'
           : (stockMaterial.nombreProveedor | titlecase)
       }}
     </app-cell>

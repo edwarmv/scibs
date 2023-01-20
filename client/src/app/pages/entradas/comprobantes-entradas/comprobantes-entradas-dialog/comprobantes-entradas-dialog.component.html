@@ -22,8 +22,6 @@
           Campo requerido
         </app-error>
       </app-form-field>
-
-      <app-checkbox formControlName="saldoInicial">Saldo inicial</app-checkbox>
     </div>
 
     <div class="flex gap-5">
@@ -107,7 +105,8 @@
             <th class="text-left px-4 rounded-l-[16px]">Nº</th>
             <th class="text-left pr-4">Material</th>
             <th class="text-left pr-4">Precio unitario (Bs.)</th>
-            <th class="text-left pr-4 rounded-r-[16px]">Cantidad</th>
+            <th class="text-left pr-4">Cantidad</th>
+            <th class="text-left pr-4 rounded-r-[16px]">Lotes</th>
           </tr>
         </thead>
 
@@ -178,6 +177,17 @@
                   El valor debe ser mayor a cero
                 </app-error>
               </app-form-field>
+            </td>
+
+            <td class="pr-4 py-3">
+              <button
+                appIconButton
+                type="button"
+                (click)="openLotesDialog(i)"
+                [color]="hasLotes(i) ? 'primary' : 'basic'"
+              >
+                <app-icon name="add"></app-icon>
+              </button>
             </td>
           </tr>
         </tbody>

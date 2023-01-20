@@ -39,10 +39,6 @@ export class ComprobantesSalidasComponent implements OnInit {
   termSubject = new Subject<string>();
   term$ = this.termSubject.asObservable().pipe(debounceTime(300));
 
-  @ViewChild('materialesVencidosFilter', { static: true })
-  materialesVencidosFilter: TemplateRef<any>;
-  vencido = false;
-
   @ViewChild('gestionesFilter', { static: true })
   gestionesFilter: TemplateRef<any>;
   gestionesDropdownCb: DropdownDataCb<Gestion>;
@@ -114,9 +110,9 @@ export class ComprobantesSalidasComponent implements OnInit {
       .open({
         title: 'Eliminar material',
         message: `¿Desea eliminar el comprobante de entrada con documento ${
-          value.vencido ? '000-' + value.id : value.documento
+          value.documento
         } del solicitante ${
-          value.vencido ? 'Vencido' : titleCase(value.solicitante.nombre)
+          titleCase(value.solicitante.nombre)
         }?`,
       })
       .closed.subscribe((confirm) => {
@@ -126,10 +122,6 @@ export class ComprobantesSalidasComponent implements OnInit {
           });
         }
       });
-  }
-
-  onVencidoChange() {
-    this.fetchData();
   }
 
   onGestionChange(gestion: Gestion | null) {
@@ -143,7 +135,6 @@ export class ComprobantesSalidasComponent implements OnInit {
         skip,
         take,
         term: this.term,
-        vencido: this.vencido,
         gestionId: this.selectedGestion
           ? this.selectedGestion.id.toString()
           : '',

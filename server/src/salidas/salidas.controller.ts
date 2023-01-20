@@ -18,7 +18,6 @@ export class SalidasController {
       solicitanteId: string;
       gestionId: string;
       materialId: string;
-      vencido: string;
     }
   ): Promise<{ values: Salida[]; total: number }> {
     return this.salidasService.findAll(query);

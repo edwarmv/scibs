@@ -17,7 +17,6 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
       .addSelect('entrada.precioUnitario', 'precioUnitarioEntrada')
       .addSelect('comprobanteEntradas.id', 'idComprobanteEntradas')
       .addSelect('comprobanteEntradas.fechaEntrada', 'fechaEntrada')
-      .addSelect('comprobanteEntradas.saldoInicial', 'saldoInicial')
       .addSelect(
         'comprobanteEntradas.saldoGestionAnterior',
         'saldoGestionAnterior'
@@ -29,7 +28,7 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
       )
       .addSelect('proveedor.id', 'idProveedor')
       .addSelect(
-        "IIF(comprobanteEntradas.saldoGestionAnterior = 1, 'Saldo gestión anterior', IIF(comprobanteEntradas.saldoInicial, 'Saldo inicialf', proveedor.nombre))",
+        "IIF(comprobanteEntradas.saldoGestionAnterior = 1, 'Saldo gestión anterior', proveedor.nombre)",
         'nombreProveedor'
       )
       .addSelect('ordenOperacion.orden', 'orden')
@@ -112,14 +111,6 @@ export class StockMaterial {
 
   @ViewColumn()
   stock: number;
-
-  @ViewColumn({
-    transformer: {
-      from: (value): boolean => value === 1,
-      to: (value) => value,
-    },
-  })
-  saldoInicial: boolean;
 
   @ViewColumn()
   idMaterial: number;

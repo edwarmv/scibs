@@ -31,9 +31,6 @@ export class ComprobanteEntradas {
   @Column({ name: 'fecha_entrada', type: 'datetime' })
   fechaEntrada: string;
 
-  @Column({ default: false, name: 'saldo_inicial' })
-  saldoInicial: boolean;
-
   @ManyToOne(() => Usuario, (usuario) => usuario.comprobantesEntradas, {
     nullable: false,
   })

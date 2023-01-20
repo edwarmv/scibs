@@ -4,6 +4,7 @@ import { ComprobanteEntradas } from './comprobantes-entradas/comprobante-entrada
 import { ComprobanteSalidas } from './comprobantes-salidas/comprobante-salidas.entity';
 import { Entrada } from './entradas/entrada.entity';
 import { Gestion } from './gestiones/gestion.entity';
+import { Lote } from './lote/lote.entity';
 import { Material } from './materiales/material.entity';
 import { Movimiento } from './movimientos/movimiento.entity';
 import { OrdenOperacion } from './orden-operaciones/orden-operacion.entity';
@@ -38,6 +39,7 @@ import { Usuario } from './usuarios/usuario.entity';
         UnidadManejo,
         Usuario,
         StockMaterial,
+        Lote,
       ],
     }),
   ],

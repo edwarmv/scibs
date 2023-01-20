@@ -23,8 +23,6 @@ export class StockMaterial {
 
   stock: number;
 
-  saldoInicial: boolean;
-
   idMaterial: number;
 
   idGestion: number;

@@ -1,3 +1,4 @@
+import { Lote } from 'src/lote/lote.entity';
 import {
   Column,
   Entity,
@@ -39,4 +40,7 @@ export class Entrada {
 
   @OneToMany(() => Movimiento, (movimiento) => movimiento.entrada)
   movimientos: Movimiento[];
+
+  @OneToMany(() => Lote, (lote) => lote.entrada, { cascade: true })
+  lotes: Lote[];
 }

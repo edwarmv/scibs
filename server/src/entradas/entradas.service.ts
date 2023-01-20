@@ -16,7 +16,6 @@ export class EntradasService {
     proveedorId = '',
     gestionId = '',
     materialId = '',
-    saldoInicial = '',
     saldoGestionAnterior = '',
   }: {
     skip: number;
@@ -25,10 +24,8 @@ export class EntradasService {
     proveedorId: string;
     gestionId: string;
     materialId: string;
-    saldoInicial: string;
     saldoGestionAnterior: string;
   }): Promise<{ values: Entrada[]; total: number }> {
-    saldoInicial = saldoInicial === 'true' ? '1' : '';
     const filters: string[] = [];
     if (proveedorId) {
       filters.push('proveedor.id = :proveedorId');
@@ -39,15 +36,13 @@ export class EntradasService {
     if (materialId) {
       filters.push('material.id = :materialId');
     }
-    if (saldoInicial) {
-      filters.push('comprobanteEntradas.saldoInicial = 1');
-    }
     if (saldoGestionAnterior === 'true') {
       filters.push('comprobanteEntradas.saldoGestionAnterior = 1');
     }
     const [values, total] = await this.entradaRepository
       .createQueryBuilder('entrada')
       .leftJoinAndSelect('entrada.material', 'material')
+      .leftJoinAndSelect('entrada.lotes', 'lotes')
       .leftJoinAndSelect('entrada.comprobanteEntradas', 'comprobanteEntradas')
       .leftJoinAndSelect('comprobanteEntradas.gestion', 'gestion')
       .leftJoinAndSelect('comprobanteEntradas.proveedor', 'proveedor')
@@ -60,10 +55,12 @@ export class EntradasService {
             OR
           proveedor.nombre LIKE :term
             OR
-          COALESCE(comprobanteEntradas.documento, '000-' || comprobanteEntradas.id) LIKE :term)${
-            filters.length > 0 ? ' AND ' : ''
-          }${filters.length > 0 ? '(' + filters.join(' AND ') + ')' : ''}`,
-        { proveedorId, gestionId, materialId, saldoInicial, term: `%${term}%` }
+          COALESCE(comprobanteEntradas.documento, '000-' || comprobanteEntradas.id) LIKE :term
+            OR
+          lotes.lote LIKE :term)${filters.length > 0 ? ' AND ' : ''}${
+          filters.length > 0 ? '(' + filters.join(' AND ') + ')' : ''
+        }`,
+        { proveedorId, gestionId, materialId, term: `%${term}%` }
       )
       .orderBy('comprobanteEntradas.fechaEntrada', 'DESC')
       .addOrderBy('ordenOperacion.orden', 'DESC')

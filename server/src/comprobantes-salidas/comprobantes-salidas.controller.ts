@@ -52,7 +52,6 @@ export class ComprobantesSalidasController {
       skip: number;
       take: number;
       term: string;
-      vencido: string;
       gestionId: string;
     }
   ): Promise<{ values: ComprobanteSalidas[]; total: number }> {

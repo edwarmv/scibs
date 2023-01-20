@@ -4,16 +4,12 @@ import { Salida } from 'src/salidas/salida.entity';
 import { Solicitante } from 'src/solicitantes/solicitante.entity';
 
 export class CreateComprobanteSalidasDto {
-  @ValidateIf((o) => o.vencido === false)
   @IsNotEmpty()
   documento: string;
 
   @IsNotEmpty()
   fechaSalida: string;
 
-  vencido: boolean;
-
-  @ValidateIf((o) => o.vencido === false)
   @IsNotEmpty()
   solicitante: Solicitante;
 

@@ -19,7 +19,6 @@ export class StockMaterialesService {
     idMaterial = '',
     saldosNulos = '',
     conSaldo = '',
-    saldosIniciales = '',
     saldosGestionAnterior = '',
   }: {
     skip?: number;
@@ -29,7 +28,6 @@ export class StockMaterialesService {
     idMaterial?: string;
     saldosNulos?: string;
     conSaldo?: string;
-    saldosIniciales?: string;
     saldosGestionAnterior?: string;
   } = {}): Promise<{ values: StockMaterial[]; total: number }> {
     const filters: string[] = [];
@@ -48,10 +46,6 @@ export class StockMaterialesService {
 
     if (conSaldo === 'true') {
       filters.push('stockMaterial.stock > 0');
-    }
-
-    if (saldosIniciales === 'true') {
-      filters.push('stockMaterial.saldoInicial = 1');
     }
 
     if (saldosGestionAnterior === 'true') {

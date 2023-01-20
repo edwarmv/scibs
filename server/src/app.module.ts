@@ -22,6 +22,7 @@ import { SalidasModule } from './salidas/salidas.module';
 import { StockMaterialesModule } from './stock-materiales/stock-materiales.module';
 import { ReportEventsModule } from './report-events/report-events.module';
 import { SocketClientModule } from './socket-client/socket-client.module';
+import { LoteModule } from './lote/lote.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -50,6 +51,7 @@ const ENV = process.env.NODE_ENV;
     StockMaterialesModule,
     ReportEventsModule,
     SocketClientModule,
+    LoteModule,
   ],
   controllers: [AppController],
   providers: [

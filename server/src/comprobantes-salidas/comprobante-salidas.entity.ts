@@ -23,9 +23,6 @@ export class ComprobanteSalidas {
   @Column({ name: 'fecha_salida', type: 'datetime' })
   fechaSalida: string;
 
-  @Column({ default: false })
-  vencido: boolean;
-
   @ManyToOne(() => Usuario, (usuario) => usuario.comprobantesSalidas, {
     nullable: false,
   })

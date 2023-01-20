@@ -21,6 +21,7 @@ import { ProveedoresDialogComponent } from './proveedores/proveedores-dialog/pro
 import { ComprobantesEntradasDialogComponent } from './comprobantes-entradas/comprobantes-entradas-dialog/comprobantes-entradas-dialog.component';
 import { CargarSaldosDialogComponent } from './cargar-saldos-dialog/cargar-saldos-dialog.component';
 import { PipesModule } from 'src/app/pipes/pipes.module';
+import { LotesDialogComponent } from './comprobantes-entradas/comprobantes-entradas-dialog/lotes-dialog/lotes-dialog.component';
 
 const routes: Routes = [
   {
@@ -56,6 +57,7 @@ const routes: Routes = [
     ComprobantesEntradasComponent,
     ComprobantesEntradasDialogComponent,
     CargarSaldosDialogComponent,
+    LotesDialogComponent,
   ],
   imports: [
     CommonModule,

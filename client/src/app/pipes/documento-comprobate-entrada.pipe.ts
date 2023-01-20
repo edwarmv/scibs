@@ -6,8 +6,7 @@ import { ComprobanteEntradas } from '../models/comprobante-entradas.model';
 })
 export class DocumentoComprobateEntradaPipe implements PipeTransform {
   transform(comprobanteEntradas: ComprobanteEntradas): string {
-    return comprobanteEntradas.saldoInicial ||
-      comprobanteEntradas.saldoGestionAnterior
+    return comprobanteEntradas.saldoGestionAnterior
       ? '000-' + comprobanteEntradas.id
       : comprobanteEntradas.documento;
   }

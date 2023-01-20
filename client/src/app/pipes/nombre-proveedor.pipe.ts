@@ -9,8 +9,6 @@ export class NombreProveedorPipe implements PipeTransform {
   transform(comprobanteEntradas: ComprobanteEntradas): string {
     return comprobanteEntradas.saldoGestionAnterior
       ? 'Salgo gestión anterior'
-      : comprobanteEntradas.saldoInicial
-      ? 'Saldo inicial'
       : titleCase(comprobanteEntradas.proveedor.nombre);
   }
 }

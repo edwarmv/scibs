@@ -30,7 +30,6 @@ export class ComprobantesSalidasService {
     {
       documento,
       fechaSalida,
-      vencido,
       solicitante,
       gestion,
       salidas,
@@ -45,11 +44,8 @@ export class ComprobantesSalidasService {
       usuario.id = user.sub;
       comprobanteSalidas.usuario = usuario;
       comprobanteSalidas.fechaSalida = fechaSalida;
-      comprobanteSalidas.vencido = vencido;
-      if (!vencido) {
-        comprobanteSalidas.documento = documento;
-        comprobanteSalidas.solicitante = solicitante;
-      }
+      comprobanteSalidas.documento = documento;
+      comprobanteSalidas.solicitante = solicitante;
       comprobanteSalidas.gestion = gestion;
 
       const orden = await this.ordenOperacionesService.getLastOrdenOperacion();
@@ -92,7 +88,6 @@ export class ComprobantesSalidasService {
     {
       documento,
       fechaSalida,
-      vencido,
       solicitante,
       gestion,
       salidas,
@@ -116,11 +111,7 @@ export class ComprobantesSalidasService {
 
     if (idComprobanteSalidas !== lastComprobanteSalidas.id) {
       throw new ConflictException(
-        `Solo puede actualizar el último comprobante registrado. Documento: ${
-          lastComprobanteSalidas.vencido
-            ? '000-' + lastComprobanteSalidas.id
-            : lastComprobanteSalidas.documento
-        }`
+        `Solo puede actualizar el último comprobante registrado. Documento: ${lastComprobanteSalidas.documento}`
       );
     }
 
@@ -132,7 +123,6 @@ export class ComprobantesSalidasService {
       comprobanteSalidas.id = idComprobanteSalidas;
       comprobanteSalidas.documento = documento;
       comprobanteSalidas.fechaSalida = fechaSalida;
-      comprobanteSalidas.vencido = vencido;
       comprobanteSalidas.solicitante = solicitante;
       comprobanteSalidas.gestion = gestion;
 
@@ -169,20 +159,14 @@ export class ComprobantesSalidasService {
     skip = 0,
     take = 5,
     term = '',
-    vencido = '',
     gestionId = '',
   }: {
     skip: number;
     take: number;
     term: string;
-    vencido: string;
     gestionId: string;
   }): Promise<{ values: ComprobanteSalidas[]; total: number }> {
-    vencido = vencido === 'true' ? '1' : '';
     const filters: string[] = [];
-    if (vencido) {
-      filters.push('comprobanteSalidas.vencido = 1');
-    }
     if (gestionId) {
       filters.push('gestion.id = :gestionId');
     }
@@ -240,11 +224,7 @@ export class ComprobantesSalidasService {
 
     if (idComprobanteSalidas !== lastComprobanteSalidas.id) {
       throw new ConflictException(
-        `Solo puede eliminar el último comprobante registrado. Documento: ${
-          lastComprobanteSalidas.vencido
-            ? '000-' + lastComprobanteSalidas.id
-            : lastComprobanteSalidas.documento
-        }`
+        `Solo puede eliminar el último comprobante registrado. Documento: ${lastComprobanteSalidas.documento}`
       );
     }
 

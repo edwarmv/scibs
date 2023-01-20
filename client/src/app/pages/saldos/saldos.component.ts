@@ -61,8 +61,6 @@ export class SaldosComponent implements OnInit, OnDestroy {
 
   saldosNulos = false;
 
-  saldosIniciales = false;
-
   saldosGestionAnterior = false;
 
   term = '';
@@ -206,10 +204,6 @@ export class SaldosComponent implements OnInit, OnDestroy {
     this.fetchData();
   }
 
-  onSaldosInicialesChange() {
-    this.fetchData();
-  }
-
   onSaldosGestionAnteriorChange() {
     this.fetchData();
   }
@@ -239,7 +233,6 @@ export class SaldosComponent implements OnInit, OnDestroy {
           ? this.selectedMaterial.id.toString()
           : '',
         saldosNulos: this.saldosNulos,
-        saldosIniciales: this.saldosIniciales,
         saldosGestionAnterior: this.saldosGestionAnterior,
         conSaldo: this.conSaldo,
       });

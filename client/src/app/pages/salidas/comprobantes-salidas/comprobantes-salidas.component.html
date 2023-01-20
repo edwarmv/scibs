@@ -7,20 +7,15 @@
 
 <ng-template #fechaColumn let-comprobanteSalidas="element">
   <app-cell>
-    {{ comprobanteSalidas.fechaSalida | date: 'd/M/yyyy' }}
+    {{ comprobanteSalidas.fechaSalida | date : 'd/M/yyyy' }}
   </app-cell>
 </ng-template>
 
 <ng-template #solicitanteColumn let-comprobanteSalidas="element">
-  <app-cell *ngIf="comprobanteSalidas.vencido; else solicitante">
-    Vencido
+  <app-cell>
+    {{ comprobanteSalidas.solicitante.apellido | titlecase }}
+    {{ comprobanteSalidas.solicitante.nombre | titlecase }}
   </app-cell>
-  <ng-template #solicitante>
-    <app-cell>
-      {{ comprobanteSalidas.solicitante.apellido | titlecase }}
-      {{ comprobanteSalidas.solicitante.nombre | titlecase }}
-    </app-cell>
-  </ng-template>
 </ng-template>
 
 <ng-template #documentoColumn let-comprobanteSalidas="element">
@@ -35,10 +30,10 @@
 
 <ng-template #gestionColumn let-comprobanteSalidas="element">
   <app-cell>
-    {{ comprobanteSalidas.gestion.fechaApertura | date: 'Y' }}
-    - {{ comprobanteSalidas.gestion.fechaApertura | date: 'd/M/yyyy'
+    {{ comprobanteSalidas.gestion.fechaApertura | date : 'Y' }}
+    - {{ comprobanteSalidas.gestion.fechaApertura | date : 'd/M/yyyy'
     }}{{ comprobanteSalidas.gestion.fechaCierre ? ' - ' : ''
-    }}{{ comprobanteSalidas.gestion.fechaCierre | date: 'd/M/yyyy' }}
+    }}{{ comprobanteSalidas.gestion.fechaCierre | date : 'd/M/yyyy' }}
   </app-cell>
 </ng-template>
 
@@ -59,12 +54,6 @@
       [(ngModel)]="term"
     />
   </app-form-field>
-</ng-template>
-
-<ng-template #materialesVencidosFilter>
-  <app-checkbox [(ngModel)]="vencido" (ngModelChange)="onVencidoChange()">
-    Materiales vencidos
-  </app-checkbox>
 </ng-template>
 
 <ng-template #gestionesFilter>
