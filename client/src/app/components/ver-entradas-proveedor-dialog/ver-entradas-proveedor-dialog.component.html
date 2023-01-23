@@ -1,30 +1,43 @@
 <div>
   <app-dialog-content>
-    <div class="flex justify-between">
+    <div class="flex gap-5 justify-between">
       <div class="flex flex-col">
         <div class="headline">Entradas</div>
         <div class="flex flex-col caption">
           <div>{{ data.proveedor.nombre | titlecase }}</div>
-          <div>{{ data.proveedor.nitCi }}</div>
+          <div>NIT / CI: {{ data.proveedor.nitCi }}</div>
         </div>
       </div>
 
-      <app-dropdown
-        [dataCb]="materialesDropdownCb"
-        [showFilter]="true"
-        filterPlaceholder="Nombre"
-        [showClearSelectionBtn]="true"
-        emptyValueLabel="Material"
-        (valueChange)="onMaterialChange($event)"
-      >
-        <app-icon prefix name="cube"></app-icon>
-      </app-dropdown>
+      <div class="flex gap-5">
+        <app-dropdown
+          [dataCb]="gestionesDropdownCb"
+          [showFilter]="true"
+          filterPlaceholder="Gestión"
+          [showClearSelectionBtn]="true"
+          emptyValueLabel="Gestión"
+          (valueChange)="onGestionChange($event)"
+        >
+          <app-icon prefix name="calendar"></app-icon>
+        </app-dropdown>
+
+        <app-dropdown
+          [dataCb]="materialesDropdownCb"
+          [showFilter]="true"
+          filterPlaceholder="Nombre"
+          [showClearSelectionBtn]="true"
+          emptyValueLabel="Material"
+          (valueChange)="onMaterialChange($event)"
+        >
+          <app-icon prefix name="cube"></app-icon>
+        </app-dropdown>
+      </div>
     </div>
 
     <app-header>
       <ng-template appHeaderBrowser>
         <app-form-field class="w-[280px]">
-          <app-label>Fecha / Documento</app-label>
+          <app-label>Fecha / Documento/ Lote</app-label>
           <app-icon name="research" appPrefix></app-icon>
           <input
             appInput
@@ -53,7 +66,7 @@
 
 <ng-template #fechaColumn let-entrada="element">
   <app-cell>
-    {{ entrada.comprobanteEntradas.fechaEntrada | date: 'd/M/yyyy' }}
+    {{ entrada.comprobanteEntradas.fechaEntrada | date : 'd/M/yyyy' }}
   </app-cell>
 </ng-template>
 
@@ -78,5 +91,21 @@
 <ng-template #valorTotalColumn let-entrada="element">
   <app-cell>
     {{ calcValorTotal(entrada.cantidad, entrada.precioUnitario) | currency }}
+  </app-cell>
+</ng-template>
+
+<ng-template #loteColumn let-entrada="element">
+  <app-cell>
+    <button
+      *ngIf="entrada.lotes.length > 0; else elseLote"
+      appIconButton
+      color="primary"
+      (click)="openLotesDialog(entrada.lotes)"
+    >
+      <app-icon name="eye"></app-icon>
+    </button>
+    <ng-template #elseLote>
+      <div>-</div>
+    </ng-template>
   </app-cell>
 </ng-template>

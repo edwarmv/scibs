@@ -29,7 +29,7 @@ export class LotesDialogComponent {
   focusedRow = false;
 
   constructor(
-    @Inject(DIALOG_DATA) public data: { lotes: LoteFormValue[], read: boolean },
+    @Inject(DIALOG_DATA) public data: { lotes: LoteFormValue[]; read: boolean },
     private dialogRef: DialogRef<LoteFormValue[]>
   ) {
     this.lotesForm = new FormArray<
@@ -54,6 +54,7 @@ export class LotesDialogComponent {
         })
       );
     }
+    this.data.read && this.lotesForm.disable();
   }
 
   addLote() {

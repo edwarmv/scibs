@@ -1,4 +1,4 @@
-import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
+import { Dialog, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -9,7 +9,9 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { getGestionLabel } from '@helpers/get-gestion-label.helper';
 import { HeaderModule } from '@layout/header/header.module';
+import { LotesDialogComponent } from '@pages/entradas/comprobantes-entradas/comprobantes-entradas-dialog/lotes-dialog/lotes-dialog.component';
 import { ButtonModule } from '@ui/button/button.module';
 import { DialogModule } from '@ui/dialog/dialog.module';
 import { DropdownDataCb } from '@ui/dropdown/dropdown.component';
@@ -20,22 +22,26 @@ import { InputModule } from '@ui/input/input.module';
 import { Column } from '@ui/table/table.component';
 import { TableDataSourceCb } from '@ui/table/table.data-source';
 import { TableModule } from '@ui/table/table.module';
+import Big from 'big.js';
 import { debounceTime, map, Subject, takeUntil } from 'rxjs';
+import { Entrada } from 'src/app/models/entrada.model';
+import { Gestion } from 'src/app/models/gestion.model';
+import { Lote } from 'src/app/models/lote.model';
 import { Material } from 'src/app/models/material.model';
-import { Salida } from 'src/app/models/salida.model';
-import { Solicitante } from 'src/app/models/solicitante.model';
+import { Proveedor } from 'src/app/models/proveedor.model';
+import { EntradasService } from 'src/app/services/entradas.service';
+import { GestionesService } from 'src/app/services/gestiones.service';
 import { MaterialesService } from 'src/app/services/materiales.service';
-import { SalidasService } from 'src/app/services/salidas.service';
 import { titleCase } from 'title-case';
 
-export type VerComprobanteSalidasDialogData = {
-  solicitante: Solicitante;
+export type VerEntradasProveedorDialogData = {
+  proveedor: Proveedor;
 };
 
 @Component({
-  selector: 'app-ver-comprobante-salidas-dialog',
-  templateUrl: './ver-comprobante-salidas-dialog.component.html',
-  styleUrls: ['./ver-comprobante-salidas-dialog.component.scss'],
+  selector: 'app-ver-entradas-proveedor-dialog',
+  templateUrl: './ver-entradas-proveedor-dialog.component.html',
+  styleUrls: ['./ver-entradas-proveedor-dialog.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -50,10 +56,10 @@ export type VerComprobanteSalidasDialogData = {
     IconModule,
   ],
 })
-export class VerComprobanteSalidasDialogComponent implements OnInit, OnDestroy {
+export class VerEntradasProveedorDialogComponent implements OnInit, OnDestroy {
   unsubscribe$ = new Subject<void>();
 
-  columns: Column<Salida>[] = [];
+  columns: Column<Entrada>[] = [];
   @ViewChild('materialColumn', { static: true })
   materialColumn: TemplateRef<any>;
   @ViewChild('fechaColumn', { static: true })
@@ -62,6 +68,12 @@ export class VerComprobanteSalidasDialogComponent implements OnInit, OnDestroy {
   documentoColumn: TemplateRef<any>;
   @ViewChild('cantidadColumn', { static: true })
   cantidadColumn: TemplateRef<any>;
+  @ViewChild('precioUnitarioColumn', { static: true })
+  precioUnitarioColumn: TemplateRef<any>;
+  @ViewChild('valorTotalColumn', { static: true })
+  valorTotalColumn: TemplateRef<any>;
+  @ViewChild('loteColumn', { static: true })
+  loteColumn: TemplateRef<any>;
 
   term = '';
   termSubject = new Subject<string>();
@@ -72,13 +84,18 @@ export class VerComprobanteSalidasDialogComponent implements OnInit, OnDestroy {
   materialesDropdownCb: DropdownDataCb<Material>;
   selectedMaterial: Material | null = null;
 
-  fetchDataCb: TableDataSourceCb<Salida>;
+  gestionesDropdownCb: DropdownDataCb<Gestion>;
+  selectedGestion: Gestion | null = null;
+
+  fetchDataCb: TableDataSourceCb<Entrada>;
 
   constructor(
-    @Inject(DIALOG_DATA) public data: VerComprobanteSalidasDialogData,
+    @Inject(DIALOG_DATA) public data: VerEntradasProveedorDialogData,
     private dialogRef: DialogRef<void>,
-    private salidasService: SalidasService,
-    private materialesService: MaterialesService
+    private entradasService: EntradasService,
+    private materialesService: MaterialesService,
+    private dialog: Dialog,
+    private gestionesService: GestionesService
   ) {}
 
   ngOnInit(): void {
@@ -100,11 +117,34 @@ export class VerComprobanteSalidasDialogComponent implements OnInit, OnDestroy {
         name: 'Cantidad',
         template: this.cantidadColumn,
       },
+      {
+        name: 'Precio unitario (Bs.)',
+        template: this.precioUnitarioColumn,
+      },
+      {
+        name: 'Valor total (Bs.)',
+        template: this.valorTotalColumn,
+      },
+      {
+        name: 'Lote',
+        template: this.loteColumn,
+      },
     ];
 
     this.term$.subscribe(() => {
       this.fetchData();
     });
+
+    this.gestionesDropdownCb = ({ skip, take, term }) =>
+      this.gestionesService.findAll({ skip, take, term }).pipe(
+        map(({ values, total }) => ({
+          values: values.map((value) => ({
+            label: getGestionLabel(value),
+            value,
+          })),
+          total,
+        }))
+      );
 
     this.materialesDropdownCb = ({ skip, take, term }) =>
       this.materialesService.findAll({ skip, take, term }).pipe(
@@ -133,14 +173,37 @@ export class VerComprobanteSalidasDialogComponent implements OnInit, OnDestroy {
     this.fetchData();
   }
 
-  private _fetchData(): TableDataSourceCb<Salida> {
+  onGestionChange(gestion: Gestion | null) {
+    if (gestion) {
+      this.selectedGestion = gestion;
+    } else {
+      this.selectedGestion = null;
+    }
+    this.fetchData();
+  }
+
+  calcValorTotal(cantidad: number, precioUnitario: number): number {
+    return new Big(cantidad).times(precioUnitario).toNumber();
+  }
+
+  openLotesDialog(lotes: Lote[]) {
+    this.dialog.open<void, { lotes: Lote[]; read: boolean }>(
+      LotesDialogComponent,
+      {
+        data: { lotes, read: true },
+      }
+    );
+  }
+
+  private _fetchData(): TableDataSourceCb<Entrada> {
     return ({ skip, take }) =>
-      this.salidasService.findAll({
+      this.entradasService.findAll({
         skip,
         take,
         term: this.term,
-        solicitanteId: this.data.solicitante.id.toString(),
+        proveedorId: this.data.proveedor.id.toString(),
         materialId: this.selectedMaterial?.id.toString() || '',
+        gestionId: this.selectedGestion?.id.toString() || '',
       });
   }
 

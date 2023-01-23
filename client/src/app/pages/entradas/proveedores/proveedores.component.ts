@@ -1,9 +1,9 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import {
-  VerComprobanteEntradasDialogComponent,
-  VerComprobanteEntradasDialogData,
-} from '@components/ver-comprobante-entradas-dialog/ver-comprobante-entradas-dialog.component';
+  VerEntradasProveedorDialogComponent,
+  VerEntradasProveedorDialogData,
+} from '@components/ver-entradas-proveedor-dialog/ver-entradas-proveedor-dialog.component';
 import { ProveedoresDialogComponent } from './proveedores-dialog/proveedores-dialog.component';
 import { ConfirmDialogService } from '@ui/confirm-dialog/confirm-dialog.service';
 import { Column } from '@ui/table/table.component';
@@ -24,8 +24,8 @@ export class ProveedoresComponent implements OnInit {
   nombreColumn: TemplateRef<any>;
   @ViewChild('nitCiColumn', { static: true })
   nitCiColumn: TemplateRef<any>;
-  @ViewChild('verIngresosColumn', { static: true })
-  verIngresosColumn: TemplateRef<any>;
+  @ViewChild('verEntradasColumn', { static: true })
+  verEntradasColumn: TemplateRef<any>;
   fetchDataCb: TableDataSourceCb<Proveedor>;
 
   @ViewChild('createProveedorButton', { static: true })
@@ -55,8 +55,8 @@ export class ProveedoresComponent implements OnInit {
         template: this.nitCiColumn,
       },
       {
-        name: 'Ver ingresos',
-        template: this.verIngresosColumn,
+        name: 'Ver entradas',
+        template: this.verEntradasColumn,
       },
     ];
 
@@ -80,8 +80,8 @@ export class ProveedoresComponent implements OnInit {
   }
 
   openVerComprobanteDialog(proveedor: Proveedor) {
-    this.dialog.open<void, VerComprobanteEntradasDialogData>(
-      VerComprobanteEntradasDialogComponent,
+    this.dialog.open<void, VerEntradasProveedorDialogData>(
+      VerEntradasProveedorDialogComponent,
       {
         data: {
           proveedor: proveedor,

@@ -56,7 +56,7 @@ export class MaterialesService {
     try {
       await this.materialRepository.update(idMaterial, {
         codigoIndex,
-        nombre,
+        nombre: nombre.toLowerCase(),
         stockMinimo,
         caracteristicas,
         partida,

@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DbConstraintError } from 'src/errors/db-constraint.error';
 import { getDbErrorMsgFields } from 'src/helpers/db-error-msg.helper';
-import { Like, QueryFailedError, Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { CreateSolicitanteDto } from './dto/create-solicitante.dto';
 import { UpdateSolicitanteDto } from './dto/update-solicitante.dto';
 import { Solicitante } from './solicitante.entity';
@@ -41,8 +41,8 @@ export class SolicitantesService {
   ): Promise<Solicitante> {
     try {
       await this.solicitanteRepository.update(idSolicitante, {
-        nombre,
-        apellido,
+        nombre: nombre.toLowerCase(),
+        apellido: apellido.toLowerCase(),
         ci,
       });
 

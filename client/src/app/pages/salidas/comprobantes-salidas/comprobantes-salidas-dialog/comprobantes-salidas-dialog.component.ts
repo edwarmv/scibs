@@ -5,7 +5,7 @@ import { getGestionLabel } from '@helpers/get-gestion-label.helper';
 import { formatISODateInputDate } from '@helpers/format-iso-date-input-date.helper';
 import { AutocompleteDataSourceCb } from '@ui/form-field/autocomplete.data-source';
 import { format } from 'date-fns';
-import { BehaviorSubject, map, Subject, takeUntil } from 'rxjs';
+import { map, Subject, takeUntil } from 'rxjs';
 import { ComprobanteSalidas } from 'src/app/models/comprobante-salidas.model';
 import { Gestion } from 'src/app/models/gestion.model';
 import { Material } from 'src/app/models/material.model';
@@ -35,6 +35,7 @@ type SalidasFormArrayGroup = FormGroup<{
   }>;
   cantidad: FormControl<number>;
   cantidadRegistrada: FormControl<number>;
+  gestionId: FormControl<number | null>;
 }>;
 
 type SalidasFormArray = FormArray<SalidasFormArrayGroup>;
@@ -65,8 +66,6 @@ export class ComprobantesSalidasDialogComponent {
 
   gestionesAutocompleteCb: AutocompleteDataSourceCb<Gestion>;
   selectedGestion?: Gestion;
-  gestionSubject = new BehaviorSubject<number | null>(null);
-  gestion$ = this.gestionSubject.asObservable();
   solicitantesAutocompleteCb: AutocompleteDataSourceCb<Solicitante>;
   selectedSolicitante?: Solicitante;
   materialesAutocompleteCb: AutocompleteDataSourceCb<Material>;
@@ -157,10 +156,6 @@ export class ComprobantesSalidasDialogComponent {
       ),
     });
 
-    this.gestion?.get('id')?.valueChanges.subscribe((id) => {
-      this.gestionSubject.next(id);
-    });
-
     if (this.data) {
       const { documento, fechaSalida, gestion, solicitante, salidas } =
         this.data;
@@ -195,6 +190,11 @@ export class ComprobantesSalidasDialogComponent {
           const label = getGestionLabel(this.selectedGestion);
           if (this.selectedGestion && label !== value) {
             this.gestion?.get('id')?.reset();
+            for (const salida of this.salidas.controls) {
+              salida.patchValue({
+                gestionId: null,
+              });
+            }
           }
         }
       });
@@ -253,6 +253,7 @@ export class ComprobantesSalidasDialogComponent {
   }
 
   genSalida(salida?: Salida): SalidasFormArrayGroup {
+    const gestionId = this.gestion?.get('id')?.value;
     const salidaGroup = new FormGroup(
       {
         id: new FormControl<number | null>(null),
@@ -270,12 +271,10 @@ export class ComprobantesSalidasDialogComponent {
         cantidadRegistrada: new FormControl(0, {
           nonNullable: true,
         }),
+        gestionId: new FormControl<number | null>(gestionId ? gestionId : null),
       },
       {
-        asyncValidators: StockMaterialValidator(
-          this.stockMaterialesService,
-          this.gestion$
-        ),
+        asyncValidators: StockMaterialValidator(this.stockMaterialesService),
       }
     );
 
@@ -306,6 +305,11 @@ export class ComprobantesSalidasDialogComponent {
       id: gestion.id,
       label: getGestionLabel(gestion),
     });
+    for (const salida of this.salidas.controls) {
+      salida.patchValue({
+        gestionId: gestion.id,
+      });
+    }
   }
 
   onSolicitanteChange(solicitante: Solicitante) {

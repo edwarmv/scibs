@@ -1,9 +1,9 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import {
-  VerComprobanteSalidasDialogComponent,
-  VerComprobanteSalidasDialogData,
-} from '@components/ver-comprobante-salidas-dialog/ver-comprobante-salidas-dialog.component';
+  VerSalidasSolicitanteDialogComponent,
+  VerSalidasSolicitanteDialogData,
+} from '@components/ver-salidas-solicitante-dialog/ver-salidas-solicitante-dialog.component';
 import { ConfirmDialogService } from '@ui/confirm-dialog/confirm-dialog.service';
 import { Column } from '@ui/table/table.component';
 import { TableDataSourceCb } from '@ui/table/table.data-source';
@@ -86,8 +86,8 @@ export class SolicitantesComponent implements OnInit {
   }
 
   openVerComprobanteDialog(solicitante: Solicitante) {
-    this.dialog.open<void, VerComprobanteSalidasDialogData>(
-      VerComprobanteSalidasDialogComponent,
+    this.dialog.open<void, VerSalidasSolicitanteDialogData>(
+      VerSalidasSolicitanteDialogComponent,
       {
         data: {
           solicitante,

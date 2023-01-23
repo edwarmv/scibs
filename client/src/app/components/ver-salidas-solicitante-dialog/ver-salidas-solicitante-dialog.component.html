@@ -1,6 +1,6 @@
 <div>
   <app-dialog-content>
-    <div class="flex justify-between">
+    <div class="flex gap-5 justify-between">
       <div class="flex flex-col">
         <div class="headline">Salidas</div>
         <div class="flex flex-col caption">
@@ -12,16 +12,28 @@
         </div>
       </div>
 
-      <app-dropdown
-        [dataCb]="materialesDropdownCb"
-        [showFilter]="true"
-        filterPlaceholder="Nombre"
-        [showClearSelectionBtn]="true"
-        emptyValueLabel="Material"
-        (valueChange)="onMaterialChange($event)"
-      >
-        <app-icon prefix name="cube"></app-icon>
-      </app-dropdown>
+      <div class="flex gap-5">
+        <app-dropdown
+          [dataCb]="gestionesDropdownCb"
+          [showFilter]="true"
+          filterPlaceholder="Gestión"
+          [showClearSelectionBtn]="true"
+          emptyValueLabel="Gestión"
+          (valueChange)="onGestionChange($event)"
+        >
+          <app-icon prefix name="calendar"></app-icon>
+        </app-dropdown>
+        <app-dropdown
+          [dataCb]="materialesDropdownCb"
+          [showFilter]="true"
+          filterPlaceholder="Nombre"
+          [showClearSelectionBtn]="true"
+          emptyValueLabel="Material"
+          (valueChange)="onMaterialChange($event)"
+        >
+          <app-icon prefix name="cube"></app-icon>
+        </app-dropdown>
+      </div>
     </div>
 
     <app-header>
@@ -56,7 +68,7 @@
 
 <ng-template #fechaColumn let-salida="element">
   <app-cell>
-    {{ salida.comprobanteSalidas.fechaSalida | date: 'd/M/yyyy' }}
+    {{ salida.comprobanteSalidas.fechaSalida | date : 'd/M/yyyy' }}
   </app-cell>
 </ng-template>
 

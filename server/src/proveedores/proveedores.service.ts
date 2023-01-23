@@ -35,7 +35,10 @@ export class ProveedoresService {
     { nombre, nitCi }: UpdateProveedorDto
   ): Promise<Proveedor> {
     try {
-      await this.proveedorRepository.update(idProveedor, { nombre, nitCi });
+      await this.proveedorRepository.update(idProveedor, {
+        nombre: nombre.toLowerCase(),
+        nitCi,
+      });
 
       return await this.proveedorRepository.findOneBy({ id: idProveedor });
     } catch (error) {

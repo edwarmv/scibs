@@ -9,6 +9,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { getGestionLabel } from '@helpers/get-gestion-label.helper';
 import { HeaderModule } from '@layout/header/header.module';
 import { ButtonModule } from '@ui/button/button.module';
 import { DialogModule } from '@ui/dialog/dialog.module';
@@ -20,23 +21,24 @@ import { InputModule } from '@ui/input/input.module';
 import { Column } from '@ui/table/table.component';
 import { TableDataSourceCb } from '@ui/table/table.data-source';
 import { TableModule } from '@ui/table/table.module';
-import Big from 'big.js';
 import { debounceTime, map, Subject, takeUntil } from 'rxjs';
-import { Entrada } from 'src/app/models/entrada.model';
+import { Gestion } from 'src/app/models/gestion.model';
 import { Material } from 'src/app/models/material.model';
-import { Proveedor } from 'src/app/models/proveedor.model';
-import { EntradasService } from 'src/app/services/entradas.service';
+import { Salida } from 'src/app/models/salida.model';
+import { Solicitante } from 'src/app/models/solicitante.model';
+import { GestionesService } from 'src/app/services/gestiones.service';
 import { MaterialesService } from 'src/app/services/materiales.service';
+import { SalidasService } from 'src/app/services/salidas.service';
 import { titleCase } from 'title-case';
 
-export type VerComprobanteEntradasDialogData = {
-  proveedor: Proveedor;
+export type VerSalidasSolicitanteDialogData = {
+  solicitante: Solicitante;
 };
 
 @Component({
-  selector: 'app-ver-comprobante-entradas-dialog',
-  templateUrl: './ver-comprobante-entradas-dialog.component.html',
-  styleUrls: ['./ver-comprobante-entradas-dialog.component.scss'],
+  selector: 'app-ver-salidas-solicitante-dialog',
+  templateUrl: './ver-salidas-solicitante-dialog.component.html',
+  styleUrls: ['./ver-salidas-solicitante-dialog.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -51,12 +53,10 @@ export type VerComprobanteEntradasDialogData = {
     IconModule,
   ],
 })
-export class VerComprobanteEntradasDialogComponent
-  implements OnInit, OnDestroy
-{
+export class VerSalidasSolicitanteDialogComponent implements OnInit, OnDestroy {
   unsubscribe$ = new Subject<void>();
 
-  columns: Column<Entrada>[] = [];
+  columns: Column<Salida>[] = [];
   @ViewChild('materialColumn', { static: true })
   materialColumn: TemplateRef<any>;
   @ViewChild('fechaColumn', { static: true })
@@ -65,10 +65,6 @@ export class VerComprobanteEntradasDialogComponent
   documentoColumn: TemplateRef<any>;
   @ViewChild('cantidadColumn', { static: true })
   cantidadColumn: TemplateRef<any>;
-  @ViewChild('precioUnitarioColumn', { static: true })
-  precioUnitarioColumn: TemplateRef<any>;
-  @ViewChild('valorTotalColumn', { static: true })
-  valorTotalColumn: TemplateRef<any>;
 
   term = '';
   termSubject = new Subject<string>();
@@ -79,13 +75,17 @@ export class VerComprobanteEntradasDialogComponent
   materialesDropdownCb: DropdownDataCb<Material>;
   selectedMaterial: Material | null = null;
 
-  fetchDataCb: TableDataSourceCb<Entrada>;
+  gestionesDropdownCb: DropdownDataCb<Gestion>;
+  selectedGestion: Gestion | null = null;
+
+  fetchDataCb: TableDataSourceCb<Salida>;
 
   constructor(
-    @Inject(DIALOG_DATA) public data: VerComprobanteEntradasDialogData,
+    @Inject(DIALOG_DATA) public data: VerSalidasSolicitanteDialogData,
     private dialogRef: DialogRef<void>,
-    private entradasService: EntradasService,
-    private materialesService: MaterialesService
+    private salidasService: SalidasService,
+    private materialesService: MaterialesService,
+    private gestionesService: GestionesService
   ) {}
 
   ngOnInit(): void {
@@ -107,19 +107,22 @@ export class VerComprobanteEntradasDialogComponent
         name: 'Cantidad',
         template: this.cantidadColumn,
       },
-      {
-        name: 'Precio unitario (Bs.)',
-        template: this.precioUnitarioColumn,
-      },
-      {
-        name: 'Valor total (Bs.)',
-        template: this.valorTotalColumn,
-      },
     ];
 
     this.term$.subscribe(() => {
       this.fetchData();
     });
+
+    this.gestionesDropdownCb = ({ skip, take, term }) =>
+      this.gestionesService.findAll({ skip, take, term }).pipe(
+        map(({ values, total }) => ({
+          values: values.map((value) => ({
+            label: getGestionLabel(value),
+            value,
+          })),
+          total,
+        }))
+      );
 
     this.materialesDropdownCb = ({ skip, take, term }) =>
       this.materialesService.findAll({ skip, take, term }).pipe(
@@ -139,6 +142,15 @@ export class VerComprobanteEntradasDialogComponent
     this.dialogRef.close();
   }
 
+  onGestionChange(gestion: Gestion | null) {
+    if (gestion) {
+      this.selectedGestion = gestion;
+    } else {
+      this.selectedGestion = null;
+    }
+    this.fetchData();
+  }
+
   onMaterialChange(material: Material | null) {
     if (material) {
       this.selectedMaterial = material;
@@ -148,17 +160,13 @@ export class VerComprobanteEntradasDialogComponent
     this.fetchData();
   }
 
-  calcValorTotal(cantidad: number, precioUnitario: number): number {
-    return new Big(cantidad).times(precioUnitario).toNumber();
-  }
-
-  private _fetchData(): TableDataSourceCb<Entrada> {
+  private _fetchData(): TableDataSourceCb<Salida> {
     return ({ skip, take }) =>
-      this.entradasService.findAll({
+      this.salidasService.findAll({
         skip,
         take,
         term: this.term,
-        proveedorId: this.data.proveedor.id.toString(),
+        solicitanteId: this.data.solicitante.id.toString(),
         materialId: this.selectedMaterial?.id.toString() || '',
       });
   }
